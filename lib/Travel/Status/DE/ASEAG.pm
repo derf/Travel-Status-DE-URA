@@ -230,6 +230,8 @@ None.
 
 =item * Class::Accessor(3pm)
 
+=item * DateTime(3pm)
+
 =item * LWP::UserAgent(3pm)
 
 =back
