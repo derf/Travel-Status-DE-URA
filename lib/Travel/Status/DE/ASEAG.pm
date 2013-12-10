@@ -17,15 +17,15 @@ use LWP::UserAgent;
 sub new {
 	my ( $class, %opt ) = @_;
 
-	my $ua  = LWP::UserAgent->new(%opt);
+	my $ua = LWP::UserAgent->new(%opt);
 
 	my $self = {
 		fuzzy => $opt{fuzzy} // 1,
-		stop => $opt{name},
-		post => {
+		stop  => $opt{name},
+		post  => {
 			ReturnList =>
-			'lineid,linename,directionid,destinationtext,vehicleid,'
-			.'tripid,estimatedtime,stopid,stoppointname'
+			  'lineid,linename,directionid,destinationtext,vehicleid,'
+			  . 'tripid,estimatedtime,stopid,stoppointname'
 		},
 	};
 
@@ -33,8 +33,8 @@ sub new {
 
 	$ua->env_proxy;
 
-	my $response
-	  = $ua->post( 'http://ivu.aseag.de/interfaces/ura/instant_V1', $self->{post} );
+	my $response = $ua->post( 'http://ivu.aseag.de/interfaces/ura/instant_V1',
+		$self->{post} );
 
 	if ( $response->is_error ) {
 		$self->{errstr} = $response->status_line;
@@ -80,14 +80,14 @@ sub sprintf_time {
 }
 
 sub is_my_stop {
-	my ($self, $stop) = @_;
+	my ( $self, $stop ) = @_;
 	my $my_stop = $self->{stop};
 
-	if ($self->{fuzzy}) {
-		return ($stop =~ m{ $my_stop }ix ? 1 : 0);
+	if ( $self->{fuzzy} ) {
+		return ( $stop =~ m{ $my_stop }ix ? 1 : 0 );
 	}
 	else {
-		return ($stop eq $my_stop);
+		return ( $stop eq $my_stop );
 	}
 }
 
@@ -97,41 +97,49 @@ sub results {
 
 	my $dt_now = DateTime->now( time_zone => 'Europe/Berlin' );
 
-	for my $dep (split(/\r\n/, $self->{raw})) {
+	for my $dep ( split( /\r\n/, $self->{raw} ) ) {
 		$dep =~ s{^\[}{};
 		$dep =~ s{\]$}{};
 
-		my ($u1, $stopname, $stopid, $lineid, $linename, $u2, $dest,
-		$vehicleid, $tripid, $timestamp) = split(/"?,"?/, $dep);
+		my (
+			$u1, $stopname, $stopid,    $lineid, $linename,
+			$u2, $dest,     $vehicleid, $tripid, $timestamp
+		) = split( /"?,"?/, $dep );
 
 		# version information
-		if ($u1 == 4) {
+		if ( $u1 == 4 ) {
 			next;
 		}
 
-		if ($self->{stop} and not $self->is_my_stop($stopname)) {
+		if ( $self->{stop} and not $self->is_my_stop($stopname) ) {
 			next;
 		}
 
-		if (not $timestamp) {
+		if ( not $timestamp ) {
 			cluck("departure element without timestamp: $dep");
 			next;
 		}
 
 		my $dt_dep = DateTime->from_epoch(
-			epoch => $timestamp / 1000,
-			time_zone => 'Europe/Berlin' );
+			epoch     => $timestamp / 1000,
+			time_zone => 'Europe/Berlin'
+		);
 
-		push(@results, Travel::Status::DE::ASEAG::Result->new(
-			date => $dt_dep->strftime('%d.%m.%Y'),
-			time => $dt_dep->strftime('%H:%M:%S'),
-			datetime => $dt_dep,
-			line => $linename,
-			line_id => $lineid,
-			destination => decode( 'UTF-8', $dest ),
-			countdown => $dt_dep->subtract_datetime($dt_now)->in_units('minutes'),
-			countdown_sec => $dt_dep->subtract_datetime($dt_now)->in_units('seconds'),
-		));
+		push(
+			@results,
+			Travel::Status::DE::ASEAG::Result->new(
+				date        => $dt_dep->strftime('%d.%m.%Y'),
+				time        => $dt_dep->strftime('%H:%M:%S'),
+				datetime    => $dt_dep,
+				line        => $linename,
+				line_id     => $lineid,
+				destination => decode( 'UTF-8', $dest ),
+				countdown =>
+				  $dt_dep->subtract_datetime($dt_now)->in_units('minutes'),
+				countdown_sec =>
+				  $dt_dep->subtract_datetime($dt_now)->in_units('seconds'),
+			)
+		);
 	}
 
 	@results = map { $_->[0] }

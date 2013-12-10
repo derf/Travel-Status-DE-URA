@@ -13,12 +13,12 @@ use Getopt::Long qw(:config no_ignore_case);
 use List::Util qw(max);
 use Travel::Status::DE::ASEAG;
 
-my ( @grep_lines );
+my (@grep_lines);
 
 GetOptions(
-	'h|help'        => sub { show_help(0) },
-	'l|line=s@'     => \@grep_lines,
-	'V|version'     => \&show_version,
+	'h|help'    => sub { show_help(0) },
+	'l|line=s@' => \@grep_lines,
+	'V|version' => \&show_version,
 
 ) or show_help(1);
 
@@ -27,19 +27,16 @@ if ( @ARGV != 1 ) {
 }
 
 # --line=foo,bar support
-@grep_lines     = split( qr{,}, join( q{,}, @grep_lines ) );
+@grep_lines = split( qr{,}, join( q{,}, @grep_lines ) );
 
-my ( $stop_name ) = @ARGV;
+my ($stop_name) = @ARGV;
 
-my $status = Travel::Status::DE::ASEAG->new(
-	name => $stop_name,
-);
+my $status = Travel::Status::DE::ASEAG->new( name => $stop_name, );
 
 sub show_help {
 	my ($code) = @_;
 
-	print "Usage: aseag-m <stop name>\n"
-	  . "See also: man aseag-m\n";
+	print "Usage: aseag-m <stop name>\n" . "See also: man aseag-m\n";
 
 	exit $code;
 }
@@ -79,17 +76,13 @@ sub show_results {
 
 	for my $d ( $status->results ) {
 
-		my $dtime    = $d->time;
+		my $dtime = $d->time;
 
-		if (
-			( @grep_lines and not( $d->line ~~ \@grep_lines ) )
-		  )
-		{
+		if ( ( @grep_lines and not( $d->line ~~ \@grep_lines ) ) ) {
 			next;
 		}
 
-		push( @output,
-			[ $dtime, $d->line, $d->destination ] );
+		push( @output, [ $dtime, $d->line, $d->destination ] );
 	}
 
 	display_result(@output);
