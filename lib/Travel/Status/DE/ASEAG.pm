@@ -180,11 +180,9 @@ version 1.04
 
 =head1 DESCRIPTION
 
-Travel::Status::DE::ASEAG is an unofficial interface to the ASEAG departure
-monitor available at
-L<http://efa.vrr.de/vrr/XSLT_DM_REQUEST?language=de&itdLPxx_transpCompany=vrr&>.
-
-It reports all upcoming tram/bus/train departures at a given place.
+Travel::Status::DE::ASEAG is an unofficial interface to an ASEAG departure
+monitor. It reports all upcoming departures at a given place in real-time.
+Schedule information is not included.
 
 =head1 METHODS
 
@@ -199,18 +197,14 @@ Arguments:
 
 =over
 
-=item B<place> => I<place>
+=item B<stop> => I<name>
 
-Name of the place/city
+Name of the stop to list departures for.
 
-=item B<type> => B<address>|B<poi>|B<stop>
+=item B<fuzzy> => I<bool>
 
-Type of the following I<name>.  B<poi> means "point of interest".  Defaults to
-B<stop> (stop/station name).
-
-=item B<name> => I<name>
-
-address / poi / stop name to list departures for.
+A true value (default) allows fuzzy matching for the I<name> set above,
+a false one requires an exact string match.
 
 =back
 
