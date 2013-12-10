@@ -1,0 +1,172 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use 5.010;
+
+no if $] >= 5.018, warnings => "experimental::smartmatch";
+
+our $VERSION = '0.00';
+
+binmode( STDOUT, ':encoding(utf-8)' );
+
+use Getopt::Long qw(:config no_ignore_case);
+use List::Util qw(max);
+use Travel::Status::DE::ASEAG;
+
+my ( @grep_lines );
+
+GetOptions(
+	'h|help'        => sub { show_help(0) },
+	'l|line=s@'     => \@grep_lines,
+	'V|version'     => \&show_version,
+
+) or show_help(1);
+
+if ( @ARGV != 1 ) {
+	show_help(1);
+}
+
+# --line=foo,bar support
+@grep_lines     = split( qr{,}, join( q{,}, @grep_lines ) );
+
+my ( $stop_name ) = @ARGV;
+
+my $status = Travel::Status::DE::ASEAG->new(
+	name => $stop_name,
+);
+
+sub show_help {
+	my ($code) = @_;
+
+	print "Usage: aseag-m <stop name>\n"
+	  . "See also: man aseag-m\n";
+
+	exit $code;
+}
+
+sub show_version {
+	say "aseag-m version ${VERSION}";
+
+	exit 0;
+}
+
+sub display_result {
+	my (@lines) = @_;
+
+	my @line_length;
+
+	if ( not @lines ) {
+		die("Nothing to show\n");
+	}
+
+	for my $i ( 0 .. 2 ) {
+		$line_length[$i] = max map { length( $_->[$i] ) } @lines;
+	}
+
+	for my $line (@lines) {
+
+		printf(
+			join( q{  }, ( map { "%-${_}s" } @line_length ) ) . "\n",
+			@{$line}[ 0 .. 2 ]
+		);
+	}
+
+	return;
+}
+
+sub show_results {
+	my @output;
+
+	for my $d ( $status->results ) {
+
+		my $dtime    = $d->time;
+
+		if (
+			( @grep_lines and not( $d->line ~~ \@grep_lines ) )
+		  )
+		{
+			next;
+		}
+
+		push( @output,
+			[ $dtime, $d->line, $d->destination ] );
+	}
+
+	display_result(@output);
+
+	return;
+}
+
+if ( my $err = $status->errstr ) {
+	say STDERR "Request error: ${err}";
+	exit 2;
+}
+
+show_results();
+
+__END__
+
+=head1 NAME
+
+efa-m - Unofficial interface to the efa.vrr.de departure monitor
+
+=head1 SYNOPSIS
+
+B<efa-m> [B<-d> I<date>] [B<-t> I<time>] I<city> [I<type>B<:>]I<name>
+
+=head1 VERSION
+
+version 1.04
+
+=head1 DESCRIPTION
+
+B<efa-m> lists upcoming tram, bus and train departures at the location I<name>
+in I<city>.
+
+By default, I<name> refers to a stop, this can be changed by specifying
+I<type>.  Supported types are B<address> and B<poi> (point of interest).
+
+=head1 OPTIONS
+
+=over
+
+=item B<-l>, B<--line> I<lines>
+
+Only show departures of I<lines> (comma-separatad list, option may be
+repeated)
+
+=item B<-V>, B<--version>
+
+Show version information.
+
+=back
+
+=head1 EXIT STATUS
+
+Zero.
+
+=head1 CONFIGURATION
+
+None.
+
+=head1 DEPENDENCIES
+
+=over
+
+=item * Class::Accessor(3pm)
+
+=item * LWP::UserAgent(3pm)
+
+=back
+
+=head1 BUGS AND LIMITATIONS
+
+Unknown.
+
+=head1 AUTHOR
+
+Copyright (C) 2013 by Daniel Friesel E<lt>derf@finalrewind.orgE<gt>
+
+=head1 LICENSE
+
+This program is licensed under the same terms as Perl itself.
