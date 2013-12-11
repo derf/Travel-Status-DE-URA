@@ -16,6 +16,7 @@ use Travel::Status::DE::ASEAG;
 my (@grep_lines);
 my $full_route = 0;
 my $hide_past  = 1;
+my $via;
 
 GetOptions(
 	'a|route-after'  => sub { $full_route = 'after' },
@@ -24,6 +25,7 @@ GetOptions(
 	'f|full-route'   => \$full_route,
 	'l|line=s@'      => \@grep_lines,
 	'p|with-past'    => sub { $hide_past  = 0 },
+	'v|via=s'        => \$via,
 	'V|version'      => \&show_version,
 
 ) or show_help(1);
@@ -90,6 +92,7 @@ sub show_results {
 			full_routes => $full_route,
 			hide_past   => $hide_past,
 			stop        => $stop_name,
+			via         => $via,
 		)
 	  )
 	{
@@ -168,6 +171,12 @@ repeated)
 
 Also show departures in the past. Also appleas to the route information of
 B<-a> / B<-b> / B<-f>.
+
+=item B<-v>, B<--via> I<stop>
+
+Only show lines which will also service I<stop>. With B<-b>, I<stop> must be
+in the schedule before I<name>, with B<-f> it may be anywhere, with B<-a>
+(and by default) it must be after I<name>.
 
 =item B<-V>, B<--version>
 

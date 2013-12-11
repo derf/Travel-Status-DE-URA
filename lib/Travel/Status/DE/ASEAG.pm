@@ -11,8 +11,9 @@ our $VERSION = '0.00';
 use Carp qw(confess cluck);
 use DateTime;
 use Encode qw(encode decode);
-use Travel::Status::DE::ASEAG::Result;
+use List::MoreUtils qw(none);
 use LWP::UserAgent;
+use Travel::Status::DE::ASEAG::Result;
 
 sub new {
 	my ( $class, %opt ) = @_;
@@ -24,6 +25,7 @@ sub new {
 		fuzzy       => $opt{fuzzy}       // 1,
 		hide_past   => $opt{hide_past}   // 1,
 		stop        => $opt{stop},
+		via         => $opt{via},
 		post        => {
 			ReturnList =>
 			  'lineid,linename,directionid,destinationtext,vehicleid,'
@@ -120,9 +122,14 @@ sub results {
 	my $fuzzy       = $opt{fuzzy}       // $self->{fuzzy}       // 1;
 	my $hide_past   = $opt{hide_past}   // $self->{hide_past}   // 1;
 	my $stop        = $opt{stop}        // $self->{stop};
+	my $via         = $opt{via}         // $self->{via};
 
 	my $dt_now = DateTime->now( time_zone => 'Europe/Berlin' );
 	my $ts_now = $dt_now->epoch;
+
+	if ($via) {
+		$full_routes ||= 'after';
+	}
 
 	for my $dep ( @{ $self->{raw_list} } ) {
 
@@ -155,15 +162,21 @@ sub results {
 			@route = map { [ $_->[9] / 1000, $_->[1] ] }
 			  grep { $_->[8] == $tripid } @{ $self->{raw_list} };
 
-			if ($hide_past) {
-				@route = grep { $_->[0] >= $ts_now } @route;
-			}
-
 			if ( $full_routes eq 'before' ) {
 				@route = grep { $_->[0] < $ts_dep } @route;
 			}
 			elsif ( $full_routes eq 'after' ) {
 				@route = grep { $_->[0] > $ts_dep } @route;
+			}
+
+			if ( $via
+				and none { $self->is_my_stop( $_->[1], $via, $fuzzy ) } @route )
+			{
+				next;
+			}
+
+			if ($hide_past) {
+				@route = grep { $_->[0] >= $ts_now } @route;
 			}
 
 			@route = map { $_->[0] }
@@ -291,6 +304,14 @@ Do not include past departures in the result list and the computed timetables.
 =item B<stop> => I<name>
 
 Only return departures at stop I<name>.
+
+=item B<via> => I<vianame>
+
+Only return departures containing I<vianame> in their route. If B<stop> is set,
+I<vianame> must be in the route after the stop I<name>. If, in addition to
+that, B<full_routes> is set to B<before>, I<vianame> must be in the route
+before the stop I<name>. Respects B<fuzzy>. Implies C<< full_routes> => 'after' >> unless
+B<full_routes> is explicitly set to B<before> / B<after> / 1.
 
 =back
 
