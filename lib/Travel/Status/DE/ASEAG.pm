@@ -250,32 +250,49 @@ Schedule information is not included.
 =item my $status = Travel::Status::DE::ASEAG->new(I<%opt>)
 
 Requests the departures as specified by I<opts> and returns a new
-Travel::Status::DE::ASEAG object.  Dies if the wrong I<opts> were passed.
+Travel::Status::DE::ASEAG object.
 
-Arguments:
+Accepts the same options is C<< $status->results >>. Options specified here
+can be overridden later, but may limit the set of available departures.
 
-=over
-
-=item B<stop> => I<name>
-
-Name of the stop to list departures for.
-
-=item B<fuzzy> => I<bool>
-
-A true value (default) allows fuzzy matching for the I<name> set above,
-a false one requires an exact string match.
-
-=back
 
 =item $status->errstr
 
 In case of an HTTP request error, returns a string describing it. If none
 occured, returns undef.
 
-=item $status->results
+=item $status->results(I<%opt>)
 
 Returns a list of Travel::Status::DE::ASEAG::Result(3pm) objects, each describing
 one departure.
+
+Accepted parameters (all are optional):
+
+=over
+
+=item B<full_routes> => B<before>|B<after>|I<bool> (default 0)
+
+When set to a true value: Compute B<route_timetable> fields in all
+Travel::Status::DE::ASEAG::Result(3pm) objects, otherwise they will not be
+set.
+
+B<before> / B<after> limits the timetable to stops before / after the stop
+I<name> (if set).
+
+=item B<fuzzy> => I<bool> (default 1)
+
+A true value allows fuzzy matching for the I<name> set above, a false one
+requires an exact string match.
+
+=item B<hide_past> => I<bool> (default 1)
+
+Do not include past departures in the result list and the computed timetables.
+
+=item B<stop> => I<name>
+
+Only return departures at stop I<name>.
+
+=back
 
 =back
 
