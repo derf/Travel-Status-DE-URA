@@ -137,7 +137,7 @@ B<aseag-m> I<name>
 
 =head1 VERSION
 
-version 1.04
+version 0.00
 
 =head1 DESCRIPTION
 
@@ -147,14 +147,27 @@ B<aseag-m> lists upcoming bus departures at the ASEAG stop I<name>.
 
 =over
 
+=item B<-a>, B<--route-after>
+
+For each departure, show all of the line's stops after I<name> as well.
+
+=item B<-b>, B<--route-before>
+
+For each departure, show all of the line's stops before I<name> as well.
+
 =item B<-f>, B<--full-route>
 
-Display complete routes (including arrival times) of all buses.
+For each departure, show all other stops serviced by the respective line.
 
 =item B<-l>, B<--line> I<lines>
 
 Only show departures of I<lines> (comma-separatad list, option may be
 repeated)
+
+=item B<-p>, B<--with-past>
+
+Also show departures in the past. Also appleas to the route information of
+B<-a> / B<-b> / B<-f>.
 
 =item B<-V>, B<--version>
 
