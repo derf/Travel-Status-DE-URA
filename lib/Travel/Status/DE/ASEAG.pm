@@ -176,6 +176,8 @@ sub results {
 				countdown_sec =>
 				  $dt_dep->subtract_datetime($dt_now)->in_units('seconds'),
 				route_timetable => [@route],
+				stop => $stopname,
+				stop_id => $stopid,
 			)
 		);
 	}

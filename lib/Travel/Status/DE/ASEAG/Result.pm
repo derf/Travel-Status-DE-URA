@@ -10,7 +10,7 @@ our $VERSION = '0.00';
 
 Travel::Status::DE::ASEAG::Result->mk_ro_accessors(
 	qw(countdown countdown_sec date datetime destination line line_id
-	  route_timetable time)
+	  route_timetable stop stop_id time)
 );
 
 sub new {
@@ -91,6 +91,19 @@ The name of the line.
 =item $departure->line_id
 
 The number of the line.
+
+=item $departure->route_timetable
+
+Returns an arrayref of arrayrefs describing the entire route as departure,
+stop objects.
+
+=item $departure->stop
+
+The stop belonging to this departure.
+
+=item $departure->stop_id
+
+The stop ID belonging to this departure.
 
 =item $departure->time
 
