@@ -9,7 +9,9 @@ use parent 'Class::Accessor';
 our $VERSION = '0.00';
 
 Travel::Status::DE::ASEAG::Result->mk_ro_accessors(
-	qw(countdown countdown_sec date datetime destination line line_id time));
+	qw(countdown countdown_sec date datetime destination line line_id
+	  route_timetable time)
+);
 
 sub new {
 	my ( $obj, %conf ) = @_;

@@ -14,11 +14,13 @@ use List::Util qw(max);
 use Travel::Status::DE::ASEAG;
 
 my (@grep_lines);
+my $show_full_route = 0;
 
 GetOptions(
-	'h|help'    => sub { show_help(0) },
-	'l|line=s@' => \@grep_lines,
-	'V|version' => \&show_version,
+	'h|help'       => sub { show_help(0) },
+	'f|full-route' => \$show_full_route,
+	'l|line=s@'    => \@grep_lines,
+	'V|version'    => \&show_version,
 
 ) or show_help(1);
 
@@ -31,7 +33,10 @@ if ( @ARGV != 1 ) {
 
 my ($stop_name) = @ARGV;
 
-my $status = Travel::Status::DE::ASEAG->new( name => $stop_name, );
+my $status = Travel::Status::DE::ASEAG->new(
+	name        => $stop_name,
+	full_routes => $show_full_route
+);
 
 sub show_help {
 	my ($code) = @_;
@@ -66,6 +71,10 @@ sub display_result {
 			join( q{  }, ( map { "%-${_}s" } @line_length ) ) . "\n",
 			@{$line}[ 0 .. 2 ]
 		);
+
+		if ($show_full_route) {
+			print "\n" . $line->[3] . "\n\n\n";
+		}
 	}
 
 	return;
@@ -82,7 +91,17 @@ sub show_results {
 			next;
 		}
 
-		push( @output, [ $dtime, $d->line, $d->destination ] );
+		push(
+			@output,
+			[
+				$dtime,
+				$d->line,
+				$d->destination,
+				join( "\n",
+					map { sprintf( '%-8s  %s', @{$_} ) }
+					  @{ $d->route_timetable } )
+			]
+		);
 	}
 
 	display_result(@output);
@@ -118,6 +137,10 @@ B<aseag-m> lists upcoming bus departures at the ASEAG stop I<name>.
 =head1 OPTIONS
 
 =over
+
+=item B<-f>, B<--full-route>
+
+Display complete routes (including arrival times) of all buses.
 
 =item B<-l>, B<--line> I<lines>
 

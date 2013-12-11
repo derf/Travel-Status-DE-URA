@@ -20,9 +20,10 @@ sub new {
 	my $ua = LWP::UserAgent->new(%opt);
 
 	my $self = {
-		fuzzy => $opt{fuzzy} // 1,
-		stop  => $opt{name},
-		post  => {
+		full_routes => $opt{full_routes} // 0,
+		fuzzy       => $opt{fuzzy}       // 1,
+		stop        => $opt{name},
+		post        => {
 			ReturnList =>
 			  'lineid,linename,directionid,destinationtext,vehicleid,'
 			  . 'tripid,estimatedtime,stopid,stoppointname'
@@ -41,7 +42,17 @@ sub new {
 		return $self;
 	}
 
-	$self->{raw} = $response->decoded_content;
+	$self->{raw_str} = $response->decoded_content;
+
+	for my $dep ( split( /\r\n/, $self->{raw_str} ) ) {
+		$dep =~ s{^\[}{};
+		$dep =~ s{\]$}{};
+
+		# first field == 4 => version information, no departure
+		if ( substr( $dep, 0, 1 ) != 4 ) {
+			push( @{ $self->{raw_list} }, [ split( /"?,"?/, $dep ) ] );
+		}
+	}
 
 	return $self;
 }
@@ -49,7 +60,17 @@ sub new {
 sub new_from_xml {
 	my ( $class, %opt ) = @_;
 
-	my $self = { raw => $opt{raw}, };
+	my $self = { raw_str => $opt{raw_str}, };
+
+	for my $dep ( split( /\r\n/, $self->{raw} ) ) {
+		$dep =~ s{^\[}{};
+		$dep =~ s{\]$}{};
+
+		# first field == 4 => version information, no departure
+		if ( substr( $dep, 0, 1 ) != 4 ) {
+			push( @{ $self->{raw_list} }, [ split( /"?,"?/, $dep ) ] );
+		}
+	}
 
 	return bless( $self, $class );
 }
@@ -97,19 +118,13 @@ sub results {
 
 	my $dt_now = DateTime->now( time_zone => 'Europe/Berlin' );
 
-	for my $dep ( split( /\r\n/, $self->{raw} ) ) {
-		$dep =~ s{^\[}{};
-		$dep =~ s{\]$}{};
+	for my $dep ( @{ $self->{raw_list} } ) {
 
 		my (
 			$u1, $stopname, $stopid,    $lineid, $linename,
 			$u2, $dest,     $vehicleid, $tripid, $timestamp
-		) = split( /"?,"?/, $dep );
-
-		# version information
-		if ( $u1 == 4 ) {
-			next;
-		}
+		) = @{$dep};
+		my @route;
 
 		if ( $self->{stop} and not $self->is_my_stop($stopname) ) {
 			next;
@@ -118,6 +133,25 @@ sub results {
 		if ( not $timestamp ) {
 			cluck("departure element without timestamp: $dep");
 			next;
+		}
+
+		if ( $self->{full_routes} ) {
+			@route = map { [ $_->[9] / 1000, $_->[1] ] }
+			  grep { $_->[8] == $tripid } @{ $self->{raw_list} };
+
+			@route = map { $_->[0] }
+			  sort { $a->[1] <=> $b->[1] }
+			  map { [ $_, $_->[0] ] } @route;
+
+			@route = map {
+				[
+					DateTime->from_epoch(
+						epoch     => $_->[0],
+						time_zone => 'Europe/Berlin'
+					  )->hms,
+					decode( 'UTF-8', $_->[1] )
+				]
+			} @route;
 		}
 
 		my $dt_dep = DateTime->from_epoch(
@@ -138,6 +172,7 @@ sub results {
 				  $dt_dep->subtract_datetime($dt_now)->in_units('minutes'),
 				countdown_sec =>
 				  $dt_dep->subtract_datetime($dt_now)->in_units('seconds'),
+				route_timetable => [@route],
 			)
 		);
 	}
