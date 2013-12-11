@@ -14,13 +14,17 @@ use List::Util qw(max);
 use Travel::Status::DE::ASEAG;
 
 my (@grep_lines);
-my $show_full_route = 0;
+my $full_route = 0;
+my $hide_past  = 1;
 
 GetOptions(
-	'h|help'       => sub { show_help(0) },
-	'f|full-route' => \$show_full_route,
-	'l|line=s@'    => \@grep_lines,
-	'V|version'    => \&show_version,
+	'a|route-after'  => sub { $full_route = 'after' },
+	'b|route-before' => sub { $full_route = 'before' },
+	'h|help'         => sub { show_help(0) },
+	'f|full-route'   => \$full_route,
+	'l|line=s@'      => \@grep_lines,
+	'p|with-past'    => sub { $hide_past  = 0 },
+	'V|version'      => \&show_version,
 
 ) or show_help(1);
 
@@ -70,7 +74,7 @@ sub display_result {
 			@{$line}[ 0 .. 2 ]
 		);
 
-		if ($show_full_route) {
+		if ($full_route) {
 			print "\n" . $line->[3] . "\n\n\n";
 		}
 	}
@@ -83,8 +87,9 @@ sub show_results {
 
 	for my $d (
 		$status->results(
+			full_routes => $full_route,
+			hide_past   => $hide_past,
 			stop        => $stop_name,
-			full_routes => $show_full_route
 		)
 	  )
 	{

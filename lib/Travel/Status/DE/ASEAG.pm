@@ -22,6 +22,7 @@ sub new {
 	my $self = {
 		full_routes => $opt{full_routes} // 0,
 		fuzzy       => $opt{fuzzy}       // 1,
+		hide_past   => $opt{hide_past}   // 1,
 		stop        => $opt{stop},
 		post        => {
 			ReturnList =>
@@ -117,9 +118,11 @@ sub results {
 
 	my $full_routes = $opt{full_routes} // $self->{full_routes} // 0;
 	my $fuzzy       = $opt{fuzzy}       // $self->{fuzzy}       // 1;
+	my $hide_past   = $opt{hide_past}   // $self->{hide_past}   // 1;
 	my $stop        = $opt{stop}        // $self->{stop};
 
 	my $dt_now = DateTime->now( time_zone => 'Europe/Berlin' );
+	my $ts_now = $dt_now->epoch;
 
 	for my $dep ( @{ $self->{raw_list} } ) {
 
@@ -138,9 +141,30 @@ sub results {
 			next;
 		}
 
+		my $dt_dep = DateTime->from_epoch(
+			epoch     => $timestamp / 1000,
+			time_zone => 'Europe/Berlin'
+		);
+		my $ts_dep = $dt_dep->epoch;
+
+		if ( $hide_past and $dt_dep->subtract_datetime($dt_now)->is_negative ) {
+			next;
+		}
+
 		if ($full_routes) {
 			@route = map { [ $_->[9] / 1000, $_->[1] ] }
 			  grep { $_->[8] == $tripid } @{ $self->{raw_list} };
+
+			if ($hide_past) {
+				@route = grep { $_->[0] >= $ts_now } @route;
+			}
+
+			if ( $full_routes eq 'before' ) {
+				@route = grep { $_->[0] < $ts_dep } @route;
+			}
+			elsif ( $full_routes eq 'after' ) {
+				@route = grep { $_->[0] > $ts_dep } @route;
+			}
 
 			@route = map { $_->[0] }
 			  sort { $a->[1] <=> $b->[1] }
@@ -157,11 +181,6 @@ sub results {
 			} @route;
 		}
 
-		my $dt_dep = DateTime->from_epoch(
-			epoch     => $timestamp / 1000,
-			time_zone => 'Europe/Berlin'
-		);
-
 		push(
 			@results,
 			Travel::Status::DE::ASEAG::Result->new(
@@ -176,8 +195,8 @@ sub results {
 				countdown_sec =>
 				  $dt_dep->subtract_datetime($dt_now)->in_units('seconds'),
 				route_timetable => [@route],
-				stop => $stopname,
-				stop_id => $stopid,
+				stop            => $stopname,
+				stop_id         => $stopid,
 			)
 		);
 	}
