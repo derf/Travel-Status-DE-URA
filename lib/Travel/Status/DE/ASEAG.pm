@@ -22,7 +22,7 @@ sub new {
 	my $self = {
 		full_routes => $opt{full_routes} // 0,
 		fuzzy       => $opt{fuzzy}       // 1,
-		stop        => $opt{name},
+		stop        => $opt{stop},
 		post        => {
 			ReturnList =>
 			  'lineid,linename,directionid,destinationtext,vehicleid,'
@@ -57,7 +57,7 @@ sub new {
 	return $self;
 }
 
-sub new_from_xml {
+sub new_from_raw {
 	my ( $class, %opt ) = @_;
 
 	my $self = { raw_str => $opt{raw_str}, };
@@ -101,10 +101,9 @@ sub sprintf_time {
 }
 
 sub is_my_stop {
-	my ( $self, $stop ) = @_;
-	my $my_stop = $self->{stop};
+	my ( $self, $stop, $my_stop, $fuzzy ) = @_;
 
-	if ( $self->{fuzzy} ) {
+	if ($fuzzy) {
 		return ( $stop =~ m{ $my_stop }ix ? 1 : 0 );
 	}
 	else {
@@ -113,8 +112,12 @@ sub is_my_stop {
 }
 
 sub results {
-	my ($self) = @_;
+	my ( $self, %opt ) = @_;
 	my @results;
+
+	my $full_routes = $opt{full_routes} // $self->{full_routes} // 0;
+	my $fuzzy       = $opt{fuzzy}       // $self->{fuzzy}       // 1;
+	my $stop        = $opt{stop}        // $self->{stop};
 
 	my $dt_now = DateTime->now( time_zone => 'Europe/Berlin' );
 
@@ -126,7 +129,7 @@ sub results {
 		) = @{$dep};
 		my @route;
 
-		if ( $self->{stop} and not $self->is_my_stop($stopname) ) {
+		if ( $stop and not $self->is_my_stop( $stopname, $stop, $fuzzy ) ) {
 			next;
 		}
 
@@ -135,7 +138,7 @@ sub results {
 			next;
 		}
 
-		if ( $self->{full_routes} ) {
+		if ($full_routes) {
 			@route = map { [ $_->[9] / 1000, $_->[1] ] }
 			  grep { $_->[8] == $tripid } @{ $self->{raw_list} };
 
@@ -199,7 +202,7 @@ Travel::Status::DE::ASEAG - unofficial ASEAG departure monitor
     use Travel::Status::DE::ASEAG;
 
     my $status = Travel::Status::DE::ASEAG->new(
-        name => 'Aachen Bushof'
+        stop => 'Aachen Bushof'
     );
 
     for my $d ($status->results) {

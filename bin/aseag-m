@@ -33,15 +33,13 @@ if ( @ARGV != 1 ) {
 
 my ($stop_name) = @ARGV;
 
-my $status = Travel::Status::DE::ASEAG->new(
-	name        => $stop_name,
-	full_routes => $show_full_route
-);
+my $status = Travel::Status::DE::ASEAG->new;
 
 sub show_help {
 	my ($code) = @_;
 
-	print "Usage: aseag-m <stop name>\n" . "See also: man aseag-m\n";
+	print "Usage: B<aseag-m> [ B<-l> I<lines> ] [B<-f>] I< <stop name>\n"
+	  . "See also: man aseag-m\n";
 
 	exit $code;
 }
@@ -83,7 +81,13 @@ sub display_result {
 sub show_results {
 	my @output;
 
-	for my $d ( $status->results ) {
+	for my $d (
+		$status->results(
+			stop        => $stop_name,
+			full_routes => $show_full_route
+		)
+	  )
+	{
 
 		my $dtime = $d->time;
 
