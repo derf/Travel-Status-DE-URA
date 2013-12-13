@@ -14,8 +14,9 @@ use List::Util qw(max);
 use Travel::Status::DE::ASEAG;
 
 my (@grep_lines);
-my $full_route = 0;
-my $hide_past  = 1;
+my $full_route     = 0;
+my $hide_past      = 1;
+my $relative_times = 0;
 my $via;
 
 GetOptions(
@@ -25,6 +26,7 @@ GetOptions(
 	'f|full-route'   => \$full_route,
 	'l|line=s@'      => \@grep_lines,
 	'p|with-past'    => sub { $hide_past  = 0 },
+	'r|relative'     => \$relative_times,
 	'v|via=s'        => \$via,
 	'V|version'      => \&show_version,
 
@@ -103,17 +105,32 @@ sub show_results {
 			next;
 		}
 
-		push(
-			@output,
-			[
-				$dtime,
-				$d->line,
-				$d->destination,
-				join( "\n",
-					map { sprintf( '%-8s  %s', @{$_} ) }
-					  @{ $d->route_timetable } )
-			]
-		);
+		if ($relative_times) {
+			push(
+				@output,
+				[
+					$d->line,
+					$d->destination,
+					sprintf( '%3d min', $d->countdown ),
+					join( "\n",
+						map { sprintf( '%-8s  %s', @{$_} ) }
+						  @{ $d->route_timetable } )
+				]
+			);
+		}
+		else {
+			push(
+				@output,
+				[
+					$dtime,
+					$d->line,
+					$d->destination,
+					join( "\n",
+						map { sprintf( '%-8s  %s', @{$_} ) }
+						  @{ $d->route_timetable } )
+				]
+			);
+		}
 	}
 
 	display_result(@output);
@@ -171,6 +188,10 @@ repeated)
 
 Also show departures in the past. Also appleas to the route information of
 B<-a> / B<-b> / B<-f>.
+
+=item B<-r>, B<--relative>
+
+Use relative departure and route times.
 
 =item B<-v>, B<--via> I<stop>
 
