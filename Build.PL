@@ -22,7 +22,7 @@ Module::Build->new(
 		'Class::Accessor' => 0,
 		'DateTime' => 0,
 		'Getopt::Long' => 0,
-		'List::Util' => 0,
+		'List::MoreUtils' => 0,
 		'LWP::UserAgent' => 0,
 	},
 	sign => 1,

@@ -1,0 +1,26 @@
+Travel::Status::DE::ASEAG - ASEAG departure monitor
+-----------------------------------------------
+
+* <http://finalrewind.org/projects/Travel-Status-DE-ASEAG/>
+
+
+Dependencies
+------------
+
+ * perl version 5.10.1 or newer
+ * Class::Accessor
+ * DateTime
+ * LWP::UserAgent
+
+
+Installation
+------------
+
+$ perl Build.PL
+$ ./Build
+$ sudo ./Build install
+
+See also the Module::Build documentation.
+
+You can then run 'man Travel::Status::DE::ASEAG'.
+This distribution also ships the script 'aseag-m', see 'man aseag-m'.
