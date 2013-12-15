@@ -67,22 +67,24 @@ sub show_version {
 sub display_result {
 	my (@lines) = @_;
 
-	my @line_length;
+	my @format = qw(%- %- %-);
 
 	if ( not @lines ) {
 		die("Nothing to show\n");
 	}
 
+	if ($relative_times) {
+		$format[2] = q{%};
+	}
+
 	for my $i ( 0 .. 2 ) {
-		$line_length[$i] = max map { length( $_->[$i] ) } @lines;
+		$format[$i] .= max map { length( $_->[$i] ) } @lines;
+		$format[$i] .= 's';
 	}
 
 	for my $line (@lines) {
 
-		printf(
-			join( q{  }, ( map { "%-${_}s" } @line_length ) ) . "\n",
-			@{$line}[ 0 .. 2 ]
-		);
+		printf( join( q{  }, @format ) . "\n", @{$line}[ 0 .. 2 ] );
 
 		if ($full_route) {
 			print "\n" . $line->[3] . "\n\n\n";
