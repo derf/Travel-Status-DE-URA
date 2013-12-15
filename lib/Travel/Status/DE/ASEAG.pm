@@ -188,7 +188,7 @@ sub results {
 					DateTime->from_epoch(
 						epoch     => $_->[0],
 						time_zone => 'Europe/Berlin'
-					  )->hms,
+					),
 					decode( 'UTF-8', $_->[1] )
 				]
 			} @route;

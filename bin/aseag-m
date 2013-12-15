@@ -9,14 +9,18 @@ our $VERSION = '0.00';
 
 binmode( STDOUT, ':encoding(utf-8)' );
 
+use DateTime;
+use DateTime::Format::Duration;
 use Getopt::Long qw(:config no_ignore_case);
 use List::Util qw(max);
 use Travel::Status::DE::ASEAG;
 
 my (@grep_lines);
-my $full_route     = 0;
-my $hide_past      = 1;
-my $relative_times = 0;
+my $full_route      = 0;
+my $hide_past       = 1;
+my $relative_times  = 0;
+my $strftime_format = '%H:%M:%S';
+my $strfrel_format  = '%M min';
 my $via;
 
 GetOptions(
@@ -27,6 +31,8 @@ GetOptions(
 	'l|line=s@'      => \@grep_lines,
 	'p|with-past'    => sub { $hide_past  = 0 },
 	'r|relative'     => \$relative_times,
+	's|strftime=s'   => \$strftime_format,
+	'S|strfrel=s'    => \$strfrel_format,
 	'v|via=s'        => \$via,
 	'V|version'      => \&show_version,
 
@@ -89,6 +95,10 @@ sub display_result {
 sub show_results {
 	my @output;
 
+	my $dt_now = DateTime->now( time_zone => 'Europe/Berlin' );
+	my $dt_format
+	  = DateTime::Format::Duration->new( pattern => $strfrel_format );
+
 	for my $d (
 		$status->results(
 			full_routes => $full_route,
@@ -98,8 +108,6 @@ sub show_results {
 		)
 	  )
 	{
-
-		my $dtime = $d->time;
 
 		if ( ( @grep_lines and not( $d->line ~~ \@grep_lines ) ) ) {
 			next;
@@ -111,10 +119,17 @@ sub show_results {
 				[
 					$d->line,
 					$d->destination,
-					sprintf( '%3d min', $d->countdown ),
-					join( "\n",
-						map { sprintf( '%-8s  %s', @{$_} ) }
-						  @{ $d->route_timetable } )
+					$dt_format->format_duration(
+						$d->datetime->subtract_datetime($dt_now)
+					),
+					join(
+						"\n",
+						map {
+							sprintf( '%s  %s',
+								$_->[0]->strftime($strftime_format),
+								$_->[1] )
+						} @{ $d->route_timetable }
+					)
 				]
 			);
 		}
@@ -122,12 +137,17 @@ sub show_results {
 			push(
 				@output,
 				[
-					$dtime,
+					$d->datetime->strftime($strftime_format),
 					$d->line,
 					$d->destination,
-					join( "\n",
-						map { sprintf( '%-8s  %s', @{$_} ) }
-						  @{ $d->route_timetable } )
+					join(
+						"\n",
+						map {
+							sprintf( '%s  %s',
+								$_->[0]->strftime($strftime_format),
+								$_->[1] )
+						} @{ $d->route_timetable }
+					)
 				]
 			);
 		}
@@ -192,6 +212,16 @@ B<-a> / B<-b> / B<-f>.
 =item B<-r>, B<--relative>
 
 Use relative departure and route times.
+
+=item B<-s>, B<--strftime> I<format>
+
+Format absolute times in I<format>, appleas both to departures and route
+data. See DateTime(3pm) for allowed patterns.
+
+=item B<-S>, B<--strfrel> I<format>
+
+Format relative times in I<format>, only applies when used with B<-r>.
+See DateTime::Format::Duration(3pm) for allowed patterns.
 
 =item B<-v>, B<--via> I<stop>
 
