@@ -74,7 +74,7 @@ sub display_result {
 	}
 
 	if ($relative_times) {
-		$format[2] = q{%};
+		$format[0] = q{%};
 	}
 
 	for my $i ( 0 .. 2 ) {
@@ -119,11 +119,11 @@ sub show_results {
 			push(
 				@output,
 				[
-					$d->line,
-					$d->destination,
 					$dt_format->format_duration(
 						$d->datetime->subtract_datetime($dt_now)
 					),
+					$d->line,
+					$d->destination,
 					join(
 						"\n",
 						map {
