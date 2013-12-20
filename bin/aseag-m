@@ -196,17 +196,16 @@ B<aseag-m> lists upcoming bus departures at the ASEAG stop I<name>.
 =item B<-a>, B<--route-after>
 
 For each departure, include the route leading to I<name>. Both stop names and
-arrival times are shown.
+departure times are shown.
 
 =item B<-b>, B<--route-before>
 
 For each departure, include the route after I<name>. Both stop names and
-arrival times are shown.
+departure times are shown.
 
 =item B<-f>, B<--full-route>
 
-For each departure, include the entire route. Both stop names and arrival
-times are shown.
+For each departure, include the entire route (stop names and departure times).
 
 =item B<-l>, B<--line> I<lines>
 
