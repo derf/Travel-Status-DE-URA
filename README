@@ -1,7 +1,7 @@
-Travel::Status::DE::ASEAG - ASEAG departure monitor
+Travel::Status::DE::URA - interface to URA-based departure monitors
 -----------------------------------------------
 
-* <http://finalrewind.org/projects/Travel-Status-DE-ASEAG/>
+* <http://finalrewind.org/projects/Travel-Status-DE-URA/>
 
 
 Dependencies
@@ -23,5 +23,5 @@ $ sudo ./Build install
 
 See also the Module::Build documentation.
 
-You can then run 'man Travel::Status::DE::ASEAG'.
+You can then run 'man Travel::Status::DE::URA'.
 This distribution also ships the script 'aseag-m', see 'man aseag-m'.
