@@ -195,34 +195,37 @@ B<aseag-m> lists upcoming bus departures at the ASEAG stop I<name>.
 
 =item B<-a>, B<--route-after>
 
-For each departure, show all of the line's stops after I<name> as well.
+For each departure, include the route leading to I<name>. Both stop names and
+arrival times are shown.
 
 =item B<-b>, B<--route-before>
 
-For each departure, show all of the line's stops before I<name> as well.
+For each departure, include the route after I<name>. Both stop names and
+arrival times are shown.
 
 =item B<-f>, B<--full-route>
 
-For each departure, show all other stops serviced by the respective line.
+For each departure, include the entire route. Both stop names and arrival
+times are shown.
 
 =item B<-l>, B<--line> I<lines>
 
-Only show departures of I<lines> (comma-separatad list, option may be
-repeated)
+Limit output to departures of I<lines> (comma-separated list of line
+names, may be used multiple times).
 
 =item B<-p>, B<--with-past>
 
-Also show departures in the past. Also appleas to the route information of
-B<-a> / B<-b> / B<-f>.
+Include past departures. Applies both to the departure output and to the
+route output of B<-a>, B<-b>, B<-f>.
 
 =item B<-r>, B<--relative>
 
-Use relative departure and route times.
+Show relative times. Appleas both to departure and route output.
 
 =item B<-s>, B<--strftime> I<format>
 
-Format absolute times in I<format>, appleas both to departures and route
-data. See DateTime(3pm) for allowed patterns.
+Format absolute times in I<format>, applies both to departure and route
+output.  See DateTime(3pm) for allowed patterns.
 
 =item B<-S>, B<--strfrel> I<format>
 
@@ -231,9 +234,9 @@ See DateTime::Format::Duration(3pm) for allowed patterns.
 
 =item B<-v>, B<--via> I<stop>
 
-Only show lines which will also service I<stop>. With B<-b>, I<stop> must be
-in the schedule before I<name>, with B<-f> it may be anywhere, with B<-a>
-(and by default) it must be after I<name>.
+Only show lines which will also service I<stop> after I<name>. With B<-b>,
+I<stop> must be in the schedule before I<name>, with B<-f> it may be anywhere,
+with B<-a> (and by default) it must be after I<name>.
 
 =item B<-V>, B<--version>
 
