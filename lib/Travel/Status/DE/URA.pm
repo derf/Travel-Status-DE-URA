@@ -20,12 +20,16 @@ sub new {
 
 	my $ua = LWP::UserAgent->new(%opt);
 
+	if ( not( $opt{ura_base} and $opt{ura_version} ) ) {
+		confess('ura_base and ura_version are mandatory');
+	}
+
 	my $self = {
-		ura_base => $opt{ura_base} // 'http://ivu.aseag.de/interfaces/ura',
-		ura_version => $opt{ura_version} // '1',
+		ura_base    => $opt{ura_base},
+		ura_version => $opt{ura_version},
 		full_routes => $opt{full_routes} // 0,
-		fuzzy       => $opt{fuzzy}       // 1,
-		hide_past   => $opt{hide_past}   // 1,
+		fuzzy       => $opt{fuzzy} // 1,
+		hide_past   => $opt{hide_past} // 1,
 		stop        => $opt{stop},
 		via         => $opt{via},
 		post        => {
@@ -241,6 +245,8 @@ realtime data providers (e.g. ASEAG)
     use Travel::Status::DE::URA;
 
     my $status = Travel::Status::DE::URA->new(
+        ura_base => 'http://ivu.aseag.de/interfaces/ura',
+        ura_version => '1',
         stop => 'Bushof'
     );
 
