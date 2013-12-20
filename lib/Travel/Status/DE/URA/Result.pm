@@ -1,4 +1,4 @@
-package Travel::Status::DE::ASEAG::Result;
+package Travel::Status::DE::URA::Result;
 
 use strict;
 use warnings;
@@ -8,7 +8,7 @@ use parent 'Class::Accessor';
 
 our $VERSION = '0.00';
 
-Travel::Status::DE::ASEAG::Result->mk_ro_accessors(
+Travel::Status::DE::URA::Result->mk_ro_accessors(
 	qw(countdown countdown_sec date datetime destination line line_id
 	  route_timetable stop stop_id time)
 );
@@ -33,8 +33,8 @@ __END__
 
 =head1 NAME
 
-Travel::Status::DE::ASEAG::Result - Information about a single
-departure received by Travel::Status::DE::ASEAG
+Travel::Status::DE::URA::Result - Information about a single
+departure received by Travel::Status::DE::URA
 
 =head1 SYNOPSIS
 
@@ -52,8 +52,8 @@ version 0.00
 
 =head1 DESCRIPTION
 
-Travel::Status::DE::ASEAG::Result describes a single departure as obtained by
-Travel::Status::DE::ASEAG.  It contains information about the time,
+Travel::Status::DE::URA::Result describes a single departure as obtained by
+Travel::Status::DE::URA.  It contains information about the time,
 line number and destination.
 
 =head1 METHODS
@@ -64,12 +64,12 @@ line number and destination.
 
 =item $departure->countdown
 
-Time in minutes from the time Travel::Status::DE::ASEAG was instantiated until
+Time in minutes from the time Travel::Status::DE::URA was instantiated until
 the bus will depart.
 
 =item $departure->countdown_sec
 
-Time in seconds from the time Travel::Status::DE::ASEAG was instantiated until
+Time in seconds from the time Travel::Status::DE::URA was instantiated until
 the bus will depart.
 
 =item $departure->date
@@ -117,9 +117,9 @@ Departure time (HH:MM:SS).
 
 =over
 
-=item $departure = Travel::Status::DE::ASEAG::Result->new(I<%data>)
+=item $departure = Travel::Status::DE::URA::Result->new(I<%data>)
 
-Returns a new Travel::Status::DE::ASEAG::Result object.  You should not need to
+Returns a new Travel::Status::DE::URA::Result object.  You should not need to
 call this.
 
 =item $departure->TO_JSON
@@ -146,7 +146,7 @@ Unknown.
 
 =head1 SEE ALSO
 
-Travel::Status::DE::ASEAG(3pm).
+Travel::Status::DE::URA(3pm).
 
 =head1 AUTHOR
 

@@ -13,7 +13,7 @@ use DateTime;
 use DateTime::Format::Duration;
 use Getopt::Long qw(:config no_ignore_case);
 use List::Util qw(max);
-use Travel::Status::DE::ASEAG;
+use Travel::Status::DE::URA;
 
 my (@grep_lines);
 my $full_route      = 0;
@@ -47,7 +47,7 @@ if ( @ARGV != 1 ) {
 
 my ($stop_name) = @ARGV;
 
-my $status = Travel::Status::DE::ASEAG->new;
+my $status = Travel::Status::DE::URA->new;
 
 sub show_help {
 	my ($code) = @_;

@@ -14,7 +14,7 @@ Module::Build->new(
 	configure_requires => {
 		'Module::Build' => 0.40,
 	},
-	module_name => 'Travel::Status::DE::ASEAG',
+	module_name => 'Travel::Status::DE::URA',
 	license => 'perl',
 	requires => {
 		'perl' => '5.10.1',

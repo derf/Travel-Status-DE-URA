@@ -1,4 +1,4 @@
-package Travel::Status::DE::ASEAG;
+package Travel::Status::DE::URA;
 
 use strict;
 use warnings;
@@ -13,7 +13,7 @@ use DateTime;
 use Encode qw(encode decode);
 use List::MoreUtils qw(none);
 use LWP::UserAgent;
-use Travel::Status::DE::ASEAG::Result;
+use Travel::Status::DE::URA::Result;
 
 sub new {
 	my ( $class, %opt ) = @_;
@@ -196,7 +196,7 @@ sub results {
 
 		push(
 			@results,
-			Travel::Status::DE::ASEAG::Result->new(
+			Travel::Status::DE::URA::Result->new(
 				date        => $dt_dep->strftime('%d.%m.%Y'),
 				time        => $dt_dep->strftime('%H:%M:%S'),
 				datetime    => $dt_dep,
@@ -229,13 +229,14 @@ __END__
 
 =head1 NAME
 
-Travel::Status::DE::ASEAG - unofficial ASEAG departure monitor
+Travel::Status::DE::URA - unofficial departure monitor for URA-based
+realtime data providers (e.g. ASEAG)
 
 =head1 SYNOPSIS
 
-    use Travel::Status::DE::ASEAG;
+    use Travel::Status::DE::URA;
 
-    my $status = Travel::Status::DE::ASEAG->new(
+    my $status = Travel::Status::DE::URA->new(
         stop => 'Aachen Bushof'
     );
 
@@ -252,18 +253,18 @@ version 1.04
 
 =head1 DESCRIPTION
 
-Travel::Status::DE::ASEAG is an unofficial interface to an ASEAG departure
-monitor. It reports all upcoming departures at a given place in real-time.
-Schedule information is not included.
+Travel::Status::DE::URA is an unofficial interface URA-based realtime departure
+monitors (as used e.g. by the ASEAG).  It reports all upcoming departures at a
+given place in real-time.  Schedule information is not included.
 
 =head1 METHODS
 
 =over
 
-=item my $status = Travel::Status::DE::ASEAG->new(I<%opt>)
+=item my $status = Travel::Status::DE::URA->new(I<%opt>)
 
 Requests the departures as specified by I<opts> and returns a new
-Travel::Status::DE::ASEAG object.
+Travel::Status::DE::USA object.
 
 Accepts the same options is C<< $status->results >>. Options specified here
 can be overridden later, but may limit the set of available departures.
@@ -276,7 +277,7 @@ occured, returns undef.
 
 =item $status->results(I<%opt>)
 
-Returns a list of Travel::Status::DE::ASEAG::Result(3pm) objects, each describing
+Returns a list of Travel::Status::DE::URA::Result(3pm) objects, each describing
 one departure.
 
 Accepted parameters (all are optional):
@@ -286,7 +287,7 @@ Accepted parameters (all are optional):
 =item B<full_routes> => B<before>|B<after>|I<bool> (default 0)
 
 When set to a true value: Compute B<route_timetable> fields in all
-Travel::Status::DE::ASEAG::Result(3pm) objects, otherwise they will not be
+Travel::Status::DE::URA::Result(3pm) objects, otherwise they will not be
 set.
 
 B<before> / B<after> limits the timetable to stops before / after the stop
@@ -339,7 +340,7 @@ Many.
 
 =head1 SEE ALSO
 
-aseag-m(1), Travel::Status::DE::ASEAG::Result(3pm).
+aseag-m(1), Travel::Status::DE::URA::Result(3pm).
 
 =head1 AUTHOR
 
