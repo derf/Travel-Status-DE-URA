@@ -21,6 +21,8 @@ sub new {
 	my $ua = LWP::UserAgent->new(%opt);
 
 	my $self = {
+		ura_base => $opt{ura_base} // 'http://ivu.aseag.de/interfaces/ura',
+		ura_version => $opt{ura_version} // '1',
 		full_routes => $opt{full_routes} // 0,
 		fuzzy       => $opt{fuzzy}       // 1,
 		hide_past   => $opt{hide_past}   // 1,
@@ -33,12 +35,14 @@ sub new {
 		},
 	};
 
+	$self->{ura_instant_url}
+	  = $self->{ura_base} . '/instant_V' . $self->{ura_version};
+
 	bless( $self, $class );
 
 	$ua->env_proxy;
 
-	my $response = $ua->post( 'http://ivu.aseag.de/interfaces/ura/instant_V1',
-		$self->{post} );
+	my $response = $ua->post( $self->{ura_instant_url}, $self->{post} );
 
 	if ( $response->is_error ) {
 		$self->{errstr} = $response->status_line;
@@ -237,7 +241,7 @@ realtime data providers (e.g. ASEAG)
     use Travel::Status::DE::URA;
 
     my $status = Travel::Status::DE::URA->new(
-        stop => 'Aachen Bushof'
+        stop => 'Bushof'
     );
 
     for my $d ($status->results) {
@@ -249,7 +253,7 @@ realtime data providers (e.g. ASEAG)
 
 =head1 VERSION
 
-version 1.04
+version 0.00
 
 =head1 DESCRIPTION
 
@@ -264,10 +268,29 @@ given place in real-time.  Schedule information is not included.
 =item my $status = Travel::Status::DE::URA->new(I<%opt>)
 
 Requests the departures as specified by I<opts> and returns a new
-Travel::Status::DE::USA object.
+Travel::Status::DE::URA object.
 
-Accepts the same options is C<< $status->results >>. Options specified here
-can be overridden later, but may limit the set of available departures.
+Accepted parameters (all are optional):
+
+=over
+
+=item B<ura_base> => I<ura_base> (default C<< http://ivu.aseag.de/interfaces/ura >>)
+
+The URA base url.
+
+=item B<ura_version> => I<version> (default C<< 1 >>)
+
+The version, may be any string.
+
+=back
+
+The request URL is I<ura_base>/instant_VI<version>, so by default
+C<< http://ivu.aseag.de/interfaces/ura/instant_V1 >>.
+
+Additionally, all options supported by C<< $status->results >> may be specified
+here, causing them to be used as defaults. Note that while they may be
+overridden later, they may limit the set of available departures requested from
+the server.
 
 
 =item $status->errstr
