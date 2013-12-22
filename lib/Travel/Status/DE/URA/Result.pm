@@ -6,7 +6,7 @@ use 5.010;
 
 use parent 'Class::Accessor';
 
-our $VERSION = '0.00';
+our $VERSION = '0.01';
 
 Travel::Status::DE::URA::Result->mk_ro_accessors(
 	qw(countdown countdown_sec date datetime destination line line_id
@@ -54,7 +54,7 @@ departure received by Travel::Status::DE::URA
 
 =head1 VERSION
 
-version 0.00
+version 0.01
 
 =head1 DESCRIPTION
 
