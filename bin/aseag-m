@@ -52,7 +52,7 @@ my $status = Travel::Status::DE::ASEAG->new;
 sub show_help {
 	my ($code) = @_;
 
-	print "Usage: B<aseag-m> [ B<-l> I<lines> ] [B<-f>] I< <stop name>\n"
+	print "Usage: aseag-m [-abfprV] [-l <lines>] [-v <stopname>] <stopname>\n"
 	  . "See also: man aseag-m\n";
 
 	exit $code;
@@ -179,7 +179,8 @@ aseag-m - Unofficial interface to the ASEAG departure monitor
 
 =head1 SYNOPSIS
 
-B<aseag-m> I<name>
+B<aseag-m> [B<-abfprV>] [B<-l> I<lines>] [B<-s> I<timefmt> | B<-S> I<timefmt>]
+[B<-v> I<stopname>] I<stopname>
 
 =head1 VERSION
 
@@ -258,6 +259,8 @@ None.
 =item * Class::Accessor(3pm)
 
 =item * DateTime(3pm)
+
+=item * DateTime::Format::Duration(3pm)
 
 =item * LWP::UserAgent(3pm)
 

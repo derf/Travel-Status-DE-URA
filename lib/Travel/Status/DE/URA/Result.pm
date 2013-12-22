@@ -94,10 +94,12 @@ The number of the line.
 
 =item $departure->route_timetable
 
+If the B<results> method of Travel::Status::DE::URA(3pm) was called with
+B<full_routes> => true:
 Returns an arrayref of arrayrefs describing the entire route. I.e.
 C<< [[$time1, $stop1], [$time2, $stop2], ...] >>.
 The times are DateTime::Duration(3pm) objects, the stops are only names,
-not IDs (subject to change).
+not IDs (subject to change).  Returns an empty arrayref otherwise.
 
 =item $departure->stop
 

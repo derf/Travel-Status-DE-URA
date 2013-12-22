@@ -276,28 +276,28 @@ given place in real-time.  Schedule information is not included.
 Requests the departures as specified by I<opts> and returns a new
 Travel::Status::DE::URA object.
 
-Accepted parameters (all are optional):
+The following two parameters are mandatory:
 
 =over
 
-=item B<ura_base> => I<ura_base> (default C<< http://ivu.aseag.de/interfaces/ura >>)
+=item B<ura_base> => I<ura_base>
 
 The URA base url.
 
-=item B<ura_version> => I<version> (default C<< 1 >>)
+=item B<ura_version> => I<version>
 
 The version, may be any string.
 
 =back
 
-The request URL is I<ura_base>/instant_VI<version>, so by default
-C<< http://ivu.aseag.de/interfaces/ura/instant_V1 >>.
+The request URL is I<ura_base>/instant_VI<version>, so for
+C<< http://ivu.aseag.de/interfaces/ura >>, C<< 1 >> this module will point
+requests to C<< http://ivu.aseag.de/interfaces/ura/instant_V1 >>.
 
 Additionally, all options supported by C<< $status->results >> may be specified
 here, causing them to be used as defaults. Note that while they may be
 overridden later, they may limit the set of available departures requested from
 the server.
-
 
 =item $status->errstr
 
@@ -324,7 +324,7 @@ I<name> (if set).
 
 =item B<fuzzy> => I<bool> (default 1)
 
-A true value allows fuzzy matching for the I<name> set above, a false one
+A true value allows fuzzy matching for the stop I<name>, a false one
 requires an exact string match.
 
 =item B<hide_past> => I<bool> (default 1)
@@ -359,6 +359,8 @@ None.
 
 =item * DateTime(3pm)
 
+=item * List::MoreUtils(3pm)
+
 =item * LWP::UserAgent(3pm)
 
 =back
@@ -369,7 +371,7 @@ Many.
 
 =head1 SEE ALSO
 
-aseag-m(1), Travel::Status::DE::URA::Result(3pm).
+Travel::Status::DE::URA::Result(3pm).
 
 =head1 AUTHOR
 
