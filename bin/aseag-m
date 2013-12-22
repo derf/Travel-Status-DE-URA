@@ -134,7 +134,7 @@ sub show_results {
 								),
 								$_->[1]
 							  )
-						} @{ $d->route_timetable }
+						} $d->route_timetable
 					)
 				]
 			);
@@ -152,7 +152,7 @@ sub show_results {
 							sprintf( '%s  %s',
 								$_->[0]->strftime($strftime_format),
 								$_->[1] )
-						} @{ $d->route_timetable }
+						} $d->route_timetable
 					)
 				]
 			);

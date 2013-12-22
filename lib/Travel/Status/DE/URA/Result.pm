@@ -10,7 +10,7 @@ our $VERSION = '0.00';
 
 Travel::Status::DE::URA::Result->mk_ro_accessors(
 	qw(countdown countdown_sec date datetime destination line line_id
-	  route_timetable stop stop_id time)
+	  stop stop_id time)
 );
 
 sub new {
@@ -19,6 +19,12 @@ sub new {
 	my $ref = \%conf;
 
 	return bless( $ref, $obj );
+}
+
+sub route_timetable {
+	my ($self) = @_;
+
+	return @{ $self->{route_timetable} };
 }
 
 sub TO_JSON {
@@ -96,10 +102,10 @@ The number of the line.
 
 If the B<results> method of Travel::Status::DE::URA(3pm) was called with
 B<full_routes> => true:
-Returns an arrayref of arrayrefs describing the entire route. I.e.
+Returns a list of arrayrefs describing the entire route. I.e.
 C<< [[$time1, $stop1], [$time2, $stop2], ...] >>.
 The times are DateTime::Duration(3pm) objects, the stops are only names,
-not IDs (subject to change).  Returns an empty arrayref otherwise.
+not IDs (subject to change).  Returns an empty list otherwise.
 
 =item $departure->stop
 
