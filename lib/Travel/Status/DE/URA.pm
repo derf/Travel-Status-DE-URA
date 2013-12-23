@@ -63,7 +63,16 @@ sub new {
 sub new_from_raw {
 	my ( $class, %opt ) = @_;
 
-	my $self = { raw_str => $opt{raw_str}, };
+	my $self = {
+		ura_base    => $opt{ura_base},
+		ura_version => $opt{ura_version},
+		full_routes => $opt{full_routes} // 0,
+		fuzzy       => $opt{fuzzy} // 1,
+		hide_past   => $opt{hide_past} // 1,
+		stop        => $opt{stop},
+		via         => $opt{via},
+		raw_str     => $opt{raw_str}
+	};
 
 	bless( $self, $class );
 
