@@ -55,6 +55,26 @@ sub new {
 
 	$self->{raw_str} = $response->decoded_content;
 
+	$self->parse_raw_data;
+
+	return $self;
+}
+
+sub new_from_raw {
+	my ( $class, %opt ) = @_;
+
+	my $self = { raw_str => $opt{raw_str}, };
+
+	bless( $self, $class );
+
+	$self->parse_raw_data;
+
+	return $self;
+}
+
+sub parse_raw_data {
+	my ($self) = @_;
+
 	for my $dep ( split( /\r\n/, $self->{raw_str} ) ) {
 		$dep =~ s{^\[}{};
 		$dep =~ s{\]$}{};
@@ -66,24 +86,6 @@ sub new {
 	}
 
 	return $self;
-}
-
-sub new_from_raw {
-	my ( $class, %opt ) = @_;
-
-	my $self = { raw_str => $opt{raw_str}, };
-
-	for my $dep ( split( /\r\n/, $self->{raw} ) ) {
-		$dep =~ s{^\[}{};
-		$dep =~ s{\]$}{};
-
-		# first field == 4 => version information, no departure
-		if ( substr( $dep, 0, 1 ) != 4 ) {
-			push( @{ $self->{raw_list} }, [ split( /"?,"?/, $dep ) ] );
-		}
-	}
-
-	return bless( $self, $class );
 }
 
 sub errstr {
