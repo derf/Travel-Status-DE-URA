@@ -98,7 +98,7 @@ sub is_my_stop {
 	my ( $self, $stop, $my_stop, $fuzzy ) = @_;
 
 	if ($fuzzy) {
-		return ( $stop =~ m{ $my_stop }ix ? 1 : 0 );
+		return ( $stop =~ m{$my_stop}i ? 1 : 0 );
 	}
 	else {
 		return ( $stop eq $my_stop );
