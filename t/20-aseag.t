@@ -7,7 +7,7 @@ use utf8;
 use Encode qw(decode);
 use File::Slurp qw(slurp);
 use List::Util qw(first);
-use Test::More tests => 18;
+use Test::More tests => 19;
 
 BEGIN {
 	use_ok('Travel::Status::DE::ASEAG');
@@ -31,6 +31,11 @@ is( $s->errstr, undef, 'errstr is not set' );
 my @results = $s->results;
 
 is( @results, 16208, 'All departures parsed and returned' );
+
+# hide_past => 1 should return nothing
+
+@results = $s->results( hide_past => 1 );
+is( @results, 0, 'hide_past => 1 returns nothing' );
 
 # fuzzy matching: bushof should return Aachen Bushof and Eschweiler Bushof
 # (459 results)
