@@ -94,25 +94,6 @@ sub errstr {
 	return $self->{errstr};
 }
 
-sub sprintf_date {
-	my ($e) = @_;
-
-	return sprintf( '%02d.%02d.%d',
-		$e->getAttribute('day'),
-		$e->getAttribute('month'),
-		$e->getAttribute('year'),
-	);
-}
-
-sub sprintf_time {
-	my ($e) = @_;
-
-	return sprintf( '%02d:%02d',
-		$e->getAttribute('hour'),
-		$e->getAttribute('minute'),
-	);
-}
-
 sub is_my_stop {
 	my ( $self, $stop, $my_stop, $fuzzy ) = @_;
 
