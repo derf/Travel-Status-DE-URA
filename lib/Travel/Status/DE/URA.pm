@@ -148,15 +148,17 @@ sub results {
 			next;
 		}
 
+		$timestamp /= 1000;
+
+		if ( $hide_past and $ts_now > $timestamp ) {
+			next;
+		}
+
 		my $dt_dep = DateTime->from_epoch(
-			epoch     => $timestamp / 1000,
+			epoch     => $timestamp,
 			time_zone => 'Europe/Berlin'
 		);
 		my $ts_dep = $dt_dep->epoch;
-
-		if ( $hide_past and $dt_dep->subtract_datetime($dt_now)->is_negative ) {
-			next;
-		}
 
 		if ($full_routes) {
 			@route = map { [ $_->[9] / 1000, $_->[1] ] }
