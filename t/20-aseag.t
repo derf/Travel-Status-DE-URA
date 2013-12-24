@@ -7,7 +7,7 @@ use utf8;
 use Encode qw(decode);
 use File::Slurp qw(slurp);
 use List::Util qw(first);
-use Test::More tests => 40;
+use Test::More tests => 38;
 
 BEGIN {
 	use_ok('Travel::Status::DE::ASEAG');
@@ -37,55 +37,44 @@ is( @results, 16208, 'All departures parsed and returned' );
 @results = $s->results( hide_past => 1 );
 is( @results, 0, 'hide_past => 1 returns nothing' );
 
-# fuzzy matching: bushof should return Aachen Bushof and Eschweiler Bushof
-# (459 results)
+# fuzzy matching: bushof should return Aachen Bushof, Eschweiler Bushof,
+# Eupon Bushof
 
-@results = $s->results( stop => 'bushof' );
+my @fuzzy = $s->get_stop_by_name('bushof');
 
-is( @results, 459, '"bushof" fuzzy-matches 459 stops' );
-ok(
-	( first { $_->stop eq 'Aachen Bushof' } @results ),
-	'"bushof" fuzzy-matches "Aachen Bushof"'
-);
-ok(
-	( first { $_->stop eq 'Eschweiler Bushof' } @results ),
-	'"bushof" fuzzy-matches "Eschweiler Bushof"'
-);
-ok(
-	( first { $_->stop eq 'Eupen Bushof' } @results ),
-	'"bushof" fuzzy-matches "Eupen Bushof"'
-);
-is(
-	(
-		first {
-			not(   $_->stop eq 'Aachen Bushof'
-				or $_->stop eq 'Eschweiler Bushof'
-				or $_->stop eq 'Eupen Bushof' );
-		}
-		@results
-	),
-	undef,
-	'"bushof" does not match anything else'
-);
+is_deeply(\@fuzzy, ['Aachen Bushof', 'Eschweiler Bushof', 'Eupen Bushof'],
+'fuzzy match for "bushof" works');
+
+# fuzzy matching: whitespaces work
+
+@fuzzy = $s->get_stop_by_name('Aachen Bushof');
+
+is_deeply(\@fuzzy, ['Aachen Bushof'],
+'fuzzy match with exact name "Aachen Bushof" works');
+
+# fuzzy matching: exact name only matches one, even though longer alternatives
+# exist
+
+@fuzzy = $s->get_stop_by_name('brand');
+
+is_deeply(\@fuzzy, ['Brand'],
+'fuzzy match with exact name "brand" works');
 
 # exact matching: bushof should match nothing
 
 @results = $s->results(
 	stop  => 'bushof',
-	fuzzy => 0
 );
 is( @results, 0, '"bushof" matches nothing' );
 
 @results = $s->results(
 	stop  => 'aachen bushof',
-	fuzzy => 0
 );
 is( @results, 0, 'matching is case-sensitive' );
 
 # exact matching: Aachen Bushof should work
 @results = $s->results(
 	stop  => 'Aachen Bushof',
-	fuzzy => 0
 );
 
 is( @results, 375, '"Aachen Bushof" matches 375 stops' );
@@ -97,11 +86,9 @@ $s = Travel::Status::DE::ASEAG->new_from_raw(
 	raw_str   => $rawstr,
 	hide_past => 0,
 	stop      => 'Aachen Bushof',
-	fuzzy     => 0
 );
 @results = $s->results(
 	stop  => 'Aachen Bushof',
-	fuzzy => 0
 );
 is( @results, 375, '"Aachen Bushof" matches 375 stops in constructor' );
 is( ( first { $_->stop ne 'Aachen Bushof' } @results ),
@@ -113,7 +100,6 @@ $s = Travel::Status::DE::ASEAG->new_from_raw(
 	raw_str   => $rawstr,
 	hide_past => 0,
 	stop      => 'Aachen Bushof',
-	fuzzy     => 0
 );
 @results = $s->results( via => 'Finkensief' );
 
@@ -150,7 +136,6 @@ $s = Travel::Status::DE::ASEAG->new_from_raw(
 	raw_str   => $rawstr,
 	hide_past => 0,
 	stop      => 'Aachen Bushof',
-	fuzzy     => 0
 );
 @results = $s->results(
 	via         => 'Finkensief',
@@ -190,7 +175,6 @@ $s = Travel::Status::DE::ASEAG->new_from_raw(
 	raw_str   => $rawstr,
 	hide_past => 0,
 	stop      => 'Aachen Bushof',
-	fuzzy     => 0
 );
 @results = $s->results(
 	via         => 'Finkensief',

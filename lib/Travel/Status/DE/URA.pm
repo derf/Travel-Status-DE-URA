@@ -11,7 +11,7 @@ our $VERSION = '0.01';
 use Carp qw(confess cluck);
 use DateTime;
 use Encode qw(encode decode);
-use List::MoreUtils qw(none);
+use List::MoreUtils qw(firstval none uniq);
 use LWP::UserAgent;
 use Travel::Status::DE::URA::Result;
 
@@ -28,7 +28,6 @@ sub new {
 		ura_base    => $opt{ura_base},
 		ura_version => $opt{ura_version},
 		full_routes => $opt{full_routes} // 0,
-		fuzzy       => $opt{fuzzy} // 1,
 		hide_past   => $opt{hide_past} // 1,
 		stop        => $opt{stop},
 		via         => $opt{via},
@@ -67,7 +66,6 @@ sub new_from_raw {
 		ura_base    => $opt{ura_base},
 		ura_version => $opt{ura_version},
 		full_routes => $opt{full_routes} // 0,
-		fuzzy       => $opt{fuzzy} // 1,
 		hide_past   => $opt{hide_past} // 1,
 		stop        => $opt{stop},
 		via         => $opt{via},
@@ -90,11 +88,28 @@ sub parse_raw_data {
 
 		# first field == 4 => version information, no departure
 		if ( substr( $dep, 0, 1 ) != 4 ) {
-			push( @{ $self->{raw_list} }, [ split( /"?,"?/, $dep ) ] );
+			my @fields = split( /"?,"?/, $dep );
+			push( @{ $self->{raw_list} },   \@fields );
+			push( @{ $self->{stop_names} }, $fields[1] );
 		}
 	}
 
+	@{ $self->{stop_names} } = uniq @{ $self->{stop_names} };
+
 	return $self;
+}
+
+sub get_stop_by_name {
+	my ( $self, $name ) = @_;
+
+	my $nname = lc($name);
+	my $actual_match = firstval { $nname eq lc($_) } @{ $self->{stop_names} };
+
+	if ($actual_match) {
+		return $actual_match;
+	}
+
+	return ( grep { $_ =~ m{$name}i } @{ $self->{stop_names} } );
 }
 
 sub errstr {
@@ -103,23 +118,11 @@ sub errstr {
 	return $self->{errstr};
 }
 
-sub is_my_stop {
-	my ( $self, $stop, $my_stop, $fuzzy ) = @_;
-
-	if ($fuzzy) {
-		return ( $stop =~ m{$my_stop}i ? 1 : 0 );
-	}
-	else {
-		return ( $stop eq $my_stop );
-	}
-}
-
 sub results {
 	my ( $self, %opt ) = @_;
 	my @results;
 
 	my $full_routes = $opt{full_routes} // $self->{full_routes} // 0;
-	my $fuzzy       = $opt{fuzzy}       // $self->{fuzzy}       // 1;
 	my $hide_past   = $opt{hide_past}   // $self->{hide_past}   // 1;
 	my $stop        = $opt{stop}        // $self->{stop};
 	my $via         = $opt{via}         // $self->{via};
@@ -139,7 +142,7 @@ sub results {
 		) = @{$dep};
 		my @route;
 
-		if ( $stop and not $self->is_my_stop( $stopname, $stop, $fuzzy ) ) {
+		if ( $stop and not( $stopname eq $stop ) ) {
 			next;
 		}
 
@@ -172,7 +175,7 @@ sub results {
 			}
 
 			if ( $via
-				and none { $self->is_my_stop( $_->[1], $via, $fuzzy ) } @route )
+				and none { $_->[1] eq $via } @route )
 			{
 				next;
 			}
@@ -316,11 +319,6 @@ set.
 B<before> / B<after> limits the timetable to stops before / after the stop
 I<name> (if set).
 
-=item B<fuzzy> => I<bool> (default 1)
-
-A true value allows fuzzy matching for the stop I<name>, a false one
-requires an exact string match.
-
 =item B<hide_past> => I<bool> (default 1)
 
 Do not include past departures in the result list and the computed timetables.
@@ -334,7 +332,7 @@ Only return departures at stop I<name>.
 Only return departures containing I<vianame> in their route. If B<stop> is set,
 I<vianame> must be in the route after the stop I<name>. If, in addition to
 that, B<full_routes> is set to B<before>, I<vianame> must be in the route
-before the stop I<name>. Respects B<fuzzy>. Implies C<< full_routes> => 'after' >> unless
+before the stop I<name>. Implies C<< full_routes> => 'after' >> unless
 B<full_routes> is explicitly set to B<before> / B<after> / 1.
 
 =back

@@ -94,6 +94,26 @@ sub display_result {
 	return;
 }
 
+sub get_exact_stop_name {
+	my ($fuzzy_name) = @_;
+
+	my @stops = $status->get_stop_by_name($fuzzy_name);
+
+	if ( @stops == 0 ) {
+		say STDERR "No stops match '$fuzzy_name'";
+		exit(1);
+	}
+	elsif ( @stops == 1 ) {
+		return $stops[0];
+	}
+	else {
+		say STDERR "The stop '$fuzzy_name' is ambiguous. Please choose one "
+		  . 'of the following:';
+		say STDERR join( "\n", @stops );
+		exit(1);
+	}
+}
+
 sub show_results {
 	my @output;
 
@@ -169,6 +189,10 @@ if ( my $err = $status->errstr ) {
 	exit 2;
 }
 
+$stop_name = get_exact_stop_name($stop_name);
+if ($via) {
+	$via = get_exact_stop_name($via);
+}
 show_results();
 
 __END__
