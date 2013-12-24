@@ -244,7 +244,7 @@ realtime data providers (e.g. ASEAG)
     my $status = Travel::Status::DE::URA->new(
         ura_base => 'http://ivu.aseag.de/interfaces/ura',
         ura_version => '1',
-        stop => 'Bushof'
+        stop => 'Aachen Bushof'
     );
 
     for my $d ($status->results) {

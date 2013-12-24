@@ -32,7 +32,7 @@ Travel::Status::DE::ASEAG - unofficial ASEAG departure monitor.
     use Travel::Status::DE::ASEAG;
 
     my $status = Travel::Status::DE::ASEAG->new(
-        stop => 'Bushof'
+        stop => 'Aachen Bushof'
     );
 
     for my $d ($status->results) {
