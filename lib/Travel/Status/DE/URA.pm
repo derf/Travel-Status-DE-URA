@@ -301,6 +301,13 @@ the server.
 In case of an HTTP request error, returns a string describing it. If none
 occured, returns undef.
 
+=item $status->get_stop_by_name(I<$stopname>)
+
+Returns a list of stops matching I<$stopname>. For instance, if the stops
+"Aachen Bushof", "Eupen Bushof", "Brand" and "Brandweiher" exist, the
+parameter "bushof" will return "Aachen Bushof" and "Eupen Bushof", while
+"brand" will only return "Brand".
+
 =item $status->results(I<%opt>)
 
 Returns a list of Travel::Status::DE::URA::Result(3pm) objects, each describing
