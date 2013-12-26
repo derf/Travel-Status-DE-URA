@@ -6,7 +6,7 @@ use 5.010;
 
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use Carp qw(confess cluck);
 use DateTime;
@@ -256,7 +256,7 @@ realtime data providers (e.g. ASEAG)
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 DESCRIPTION
 

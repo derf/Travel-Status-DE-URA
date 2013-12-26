@@ -1,5 +1,6 @@
-git HEAD
+Travel::Status::DE::URA 0.02 - Thu Dec 26 2013
 
+    * aseag-m: Fix spaces in stop names (they didn't match anything)
     * Remove fuzzy matching from constructor / ->results API. Use
       the new get_stop_by_name function instead (returns all matching stops).
       Update aseag-m accordingly
