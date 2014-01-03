@@ -101,7 +101,7 @@ sub get_exact_stop_name {
 
 	if ( @stops == 0 ) {
 		say STDERR "No stops match '$fuzzy_name'";
-		exit(1);
+		exit(3);
 	}
 	elsif ( @stops == 1 ) {
 		return $stops[0];
@@ -110,7 +110,7 @@ sub get_exact_stop_name {
 		say STDERR "The stop '$fuzzy_name' is ambiguous. Please choose one "
 		  . 'of the following:';
 		say STDERR join( "\n", @stops );
-		exit(1);
+		exit(3);
 	}
 }
 
@@ -270,7 +270,9 @@ Show version information.
 
 =head1 EXIT STATUS
 
-Zero.
+Normally zero. B<1> means B<aseag-m> was called with invalid options,
+B<2> indicates a request error from Travel::Status::DE::EFA(3pm),
+B<3> a bad (unknown or ambiguous) I<stop> name.
 
 =head1 CONFIGURATION
 
