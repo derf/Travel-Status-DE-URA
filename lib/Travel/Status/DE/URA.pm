@@ -202,16 +202,11 @@ sub results {
 		push(
 			@results,
 			Travel::Status::DE::URA::Result->new(
-				date        => $dt_dep->strftime('%d.%m.%Y'),
-				time        => $dt_dep->strftime('%H:%M:%S'),
-				datetime    => $dt_dep,
-				line        => $linename,
-				line_id     => $lineid,
-				destination => decode( 'UTF-8', $dest ),
-				countdown =>
-				  $dt_dep->subtract_datetime($dt_now)->in_units('minutes'),
-				countdown_sec =>
-				  $dt_dep->subtract_datetime($dt_now)->in_units('seconds'),
+				datetime        => $dt_dep,
+				dt_now          => $dt_now,
+				line            => $linename,
+				line_id         => $lineid,
+				destination     => decode( 'UTF-8', $dest ),
 				route_timetable => [@route],
 				stop            => $stopname,
 				stop_id         => $stopid,
@@ -221,7 +216,7 @@ sub results {
 
 	@results = map { $_->[0] }
 	  sort { $a->[1] <=> $b->[1] }
-	  map { [ $_, $_->countdown ] } @results;
+	  map { [ $_, $_->datetime->epoch ] } @results;
 
 	$self->{results} = \@results;
 

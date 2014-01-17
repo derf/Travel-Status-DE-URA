@@ -9,9 +9,7 @@ use parent 'Class::Accessor';
 our $VERSION = '0.02';
 
 Travel::Status::DE::URA::Result->mk_ro_accessors(
-	qw(countdown countdown_sec date datetime destination line line_id
-	  stop stop_id time)
-);
+	qw(datetime destination line line_id stop stop_id));
 
 sub new {
 	my ( $obj, %conf ) = @_;
@@ -19,6 +17,37 @@ sub new {
 	my $ref = \%conf;
 
 	return bless( $ref, $obj );
+}
+
+sub countdown {
+	my ($self) = @_;
+
+	$self->{countdown} //= $self->datetime->subtract_datetime( $self->{dt_now} )
+	  ->in_units('minutes');
+
+	return $self->{countdown};
+}
+
+sub countdown_sec {
+	my ($self) = @_;
+
+	$self->{countdown_sec}
+	  //= $self->datetime->subtract_datetime( $self->{dt_now} )
+	  ->in_units('seconds');
+
+	return $self->{countdown_sec};
+}
+
+sub date {
+	my ($self) = @_;
+
+	return $self->datetime->strftime('%d.%m.%Y');
+}
+
+sub time {
+	my ($self) = @_;
+
+	return $self->datetime->strftime('%H:%M:%S');
 }
 
 sub route_timetable {
