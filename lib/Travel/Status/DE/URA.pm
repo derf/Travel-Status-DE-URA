@@ -25,6 +25,8 @@ sub new {
 	}
 
 	my $self = {
+		datetime    => $opt{datetime}
+		  // DateTime->now( time_zone => 'Europe/Berlin' ),
 		ura_base    => $opt{ura_base},
 		ura_version => $opt{ura_version},
 		full_routes => $opt{full_routes} // 0,
@@ -63,6 +65,8 @@ sub new_from_raw {
 	my ( $class, %opt ) = @_;
 
 	my $self = {
+		datetime    => $opt{datetime}
+		  // DateTime->now( time_zone => 'Europe/Berlin' ),
 		ura_base    => $opt{ura_base},
 		ura_version => $opt{ura_version},
 		full_routes => $opt{full_routes} // 0,
@@ -127,7 +131,7 @@ sub results {
 	my $stop        = $opt{stop}        // $self->{stop};
 	my $via         = $opt{via}         // $self->{via};
 
-	my $dt_now = DateTime->now( time_zone => 'Europe/Berlin' );
+	my $dt_now = $self->{datetime};
 	my $ts_now = $dt_now->epoch;
 
 	if ($via) {

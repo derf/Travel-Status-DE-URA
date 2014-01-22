@@ -16,6 +16,14 @@ require_ok('Travel::Status::DE::ASEAG');
 
 my $rawstr = slurp('t/in/aseag_20131223T132300');
 my $s      = Travel::Status::DE::ASEAG->new_from_raw(
+	datetime  => DateTime->new(
+		year      => 2014,
+		month     => 1,
+		day       => 3,
+		hour      => 20,
+		minute    => 1,
+		time_zone => 'Europe/Berlin'
+	),
 	raw_str   => $rawstr,
 	hide_past => 0
 );
@@ -60,6 +68,14 @@ is( ( first { $_->stop ne 'Aachen Bushof' } @results ),
 
 # exact matching: also works in constructor
 $s = Travel::Status::DE::ASEAG->new_from_raw(
+	datetime  => DateTime->new(
+		year      => 2014,
+		month     => 1,
+		day       => 3,
+		hour      => 20,
+		minute    => 1,
+		time_zone => 'Europe/Berlin'
+	),
 	raw_str   => $rawstr,
 	hide_past => 0,
 	stop      => 'Aachen Bushof',

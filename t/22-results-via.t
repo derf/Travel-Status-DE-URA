@@ -20,6 +20,14 @@ my ($s, @results);
 # via filter in ->results, implicit route_after
 
 $s = Travel::Status::DE::ASEAG->new_from_raw(
+	datetime  => DateTime->new(
+		year   => 2013,
+		month  => 12,
+		day    => 23,
+		hour   => 10,
+		minute => 0,
+		time_zone => 'Europe/Berlin'
+	),
 	raw_str   => $rawstr,
 	hide_past => 0,
 	stop      => 'Aachen Bushof',
