@@ -19,13 +19,14 @@ sub new {
 	my ( $class, %opt ) = @_;
 
 	my $ua = LWP::UserAgent->new(%opt);
+	my $response;
 
 	if ( not( $opt{ura_base} and $opt{ura_version} ) ) {
 		confess('ura_base and ura_version are mandatory');
 	}
 
 	my $self = {
-		datetime    => $opt{datetime}
+		datetime => $opt{datetime}
 		  // DateTime->now( time_zone => 'Europe/Berlin' ),
 		ura_base    => $opt{ura_base},
 		ura_version => $opt{ura_version},
@@ -47,7 +48,12 @@ sub new {
 
 	$ua->env_proxy;
 
-	my $response = $ua->post( $self->{ura_instant_url}, $self->{post} );
+	if ( substr( $self->{ura_instant_url}, 0, 5 ) ne 'file:' ) {
+		$response = $ua->post( $self->{ura_instant_url}, $self->{post} );
+	}
+	else {
+		$response = $ua->get( $self->{ura_instant_url} );
+	}
 
 	if ( $response->is_error ) {
 		$self->{errstr} = $response->status_line;
@@ -55,28 +61,9 @@ sub new {
 	}
 
 	$self->{raw_str} = $response->decoded_content;
-
-	$self->parse_raw_data;
-
-	return $self;
-}
-
-sub new_from_raw {
-	my ( $class, %opt ) = @_;
-
-	my $self = {
-		datetime    => $opt{datetime}
-		  // DateTime->now( time_zone => 'Europe/Berlin' ),
-		ura_base    => $opt{ura_base},
-		ura_version => $opt{ura_version},
-		full_routes => $opt{full_routes} // 0,
-		hide_past   => $opt{hide_past} // 1,
-		stop        => $opt{stop},
-		via         => $opt{via},
-		raw_str     => $opt{raw_str}
-	};
-
-	bless( $self, $class );
+	if ( substr( $self->{ura_instant_url}, 0, 5 ) eq 'file:' ) {
+		$self->{raw_str} = encode( 'UTF-8', $self->{raw_str} );
+	}
 
 	$self->parse_raw_data;
 

@@ -4,22 +4,21 @@ use warnings;
 use 5.010;
 use utf8;
 
-use Encode qw(decode);
-use File::Slurp qw(slurp);
 use List::Util qw(first);
 use Test::More tests => 23;
 
 BEGIN {
-	use_ok('Travel::Status::DE::ASEAG');
+	use_ok('Travel::Status::DE::URA');
 }
-require_ok('Travel::Status::DE::ASEAG');
+require_ok('Travel::Status::DE::URA');
 
-my $rawstr = slurp('t/in/aseag_20131223T132300');
 my ($s, @results);
 
 # via filter in ->results, implicit route_after
 
-$s = Travel::Status::DE::ASEAG->new_from_raw(
+$s = Travel::Status::DE::URA->new(
+	ura_base  => 'file:t/in',
+	ura_version => 1,
 	datetime  => DateTime->new(
 		year   => 2013,
 		month  => 12,
@@ -28,7 +27,6 @@ $s = Travel::Status::DE::ASEAG->new_from_raw(
 		minute => 0,
 		time_zone => 'Europe/Berlin'
 	),
-	raw_str   => $rawstr,
 	hide_past => 0,
 	stop      => 'Aachen Bushof',
 );
@@ -63,8 +61,9 @@ is(
 
 # via filter in ->results, explicit route_after
 
-$s = Travel::Status::DE::ASEAG->new_from_raw(
-	raw_str   => $rawstr,
+$s = Travel::Status::DE::URA->new(
+	ura_base  => 'file:t/in',
+	ura_version => 1,
 	hide_past => 0,
 	stop      => 'Aachen Bushof',
 );
@@ -102,8 +101,9 @@ is(
 
 # via filter in ->results, explicit route_before
 
-$s = Travel::Status::DE::ASEAG->new_from_raw(
-	raw_str   => $rawstr,
+$s = Travel::Status::DE::URA->new(
+	ura_base  => 'file:t/in',
+	ura_version => 1,
 	hide_past => 0,
 	stop      => 'Aachen Bushof',
 );

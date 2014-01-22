@@ -5,18 +5,17 @@ use 5.010;
 use utf8;
 
 use Encode qw(decode);
-use File::Slurp qw(slurp);
 use List::Util qw(first);
 use Test::More tests => 5;
 
 BEGIN {
-	use_ok('Travel::Status::DE::ASEAG');
+	use_ok('Travel::Status::DE::URA');
 }
-require_ok('Travel::Status::DE::ASEAG');
+require_ok('Travel::Status::DE::URA');
 
-my $rawstr = slurp('t/in/aseag_20131223T132300');
-my $s      = Travel::Status::DE::ASEAG->new_from_raw(
-	raw_str   => $rawstr,
+my $s      = Travel::Status::DE::URA->new(
+	ura_base  => 'file:t/in',
+	ura_version => 1,
 	hide_past => 0
 );
 

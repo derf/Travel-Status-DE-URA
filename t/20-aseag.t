@@ -5,17 +5,17 @@ use 5.010;
 use utf8;
 
 use Encode qw(decode);
-use File::Slurp qw(slurp);
 use List::Util qw(first);
-use Test::More tests => 14;
+use Test::More tests => 13;
 
 BEGIN {
-	use_ok('Travel::Status::DE::ASEAG');
+	use_ok('Travel::Status::DE::URA');
 }
-require_ok('Travel::Status::DE::ASEAG');
+require_ok('Travel::Status::DE::URA');
 
-my $rawstr = slurp('t/in/aseag_20131223T132300');
-my $s      = Travel::Status::DE::ASEAG->new_from_raw(
+my $s      = Travel::Status::DE::URA->new(
+	ura_base  => 'file:t/in',
+	ura_version => 1,
 	datetime  => DateTime->new(
 		year      => 2014,
 		month     => 1,
@@ -24,12 +24,10 @@ my $s      = Travel::Status::DE::ASEAG->new_from_raw(
 		minute    => 1,
 		time_zone => 'Europe/Berlin'
 	),
-	raw_str   => $rawstr,
 	hide_past => 0
 );
 
-isa_ok( 'Travel::Status::DE::ASEAG', 'Travel::Status::DE::URA' );
-isa_ok( $s,                          'Travel::Status::DE::ASEAG' );
+isa_ok( $s,                          'Travel::Status::DE::URA' );
 
 can_ok( $s, qw(errstr results) );
 
@@ -67,7 +65,9 @@ is( ( first { $_->stop ne 'Aachen Bushof' } @results ),
 	undef, '"Aachen Bushof" only matches "Aachen Bushof"' );
 
 # exact matching: also works in constructor
-$s = Travel::Status::DE::ASEAG->new_from_raw(
+$s = Travel::Status::DE::URA->new(
+	ura_base  => 'file:t/in',
+	ura_version => 1,
 	datetime  => DateTime->new(
 		year      => 2014,
 		month     => 1,
@@ -76,7 +76,6 @@ $s = Travel::Status::DE::ASEAG->new_from_raw(
 		minute    => 1,
 		time_zone => 'Europe/Berlin'
 	),
-	raw_str   => $rawstr,
 	hide_past => 0,
 	stop      => 'Aachen Bushof',
 );
