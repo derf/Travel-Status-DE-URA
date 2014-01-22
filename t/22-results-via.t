@@ -23,8 +23,8 @@ $s = Travel::Status::DE::URA->new(
 		year   => 2013,
 		month  => 12,
 		day    => 23,
-		hour   => 10,
-		minute => 0,
+		hour   => 12,
+		minute => 42,
 		time_zone => 'Europe/Berlin'
 	),
 	hide_past => 0,
