@@ -1,6 +1,13 @@
-git HEAD
+Travel::Status::DE::URA 0.03 - Thu Jan 23 2014
 
-    * Travel::Status::DE::URE::Result: Fix countdown_sec accessor
+    * Result: Relative times (countdown, countdown_sec) are now computed
+      relative to the creation of their Travel::Status::DE::URA object. They
+      used to be relative to the call of the "results" function.
+    * Result: Fix countdown_sec accessor
+    * Result: Do DateTime math on demand, not when
+      creating the object. Halves the average runtime, though this depends
+      on the amount of results used by the application (the more results
+      are used, the less notable the performance gain will be)
 
 Travel::Status::DE::URA 0.02 - Thu Dec 26 2013
 

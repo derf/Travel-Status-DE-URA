@@ -8,7 +8,7 @@ use parent 'Class::Accessor';
 
 use DateTime::Format::Duration;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 Travel::Status::DE::URA::Result->mk_ro_accessors(
 	qw(datetime destination line line_id stop stop_id));
@@ -85,7 +85,7 @@ departure received by Travel::Status::DE::URA
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 DESCRIPTION
 

@@ -11,6 +11,7 @@ Dependencies
  * Class::Accessor
  * DateTime
  * DateTime::Format::Duration
+ * List::MoreUtils
  * LWP::UserAgent
 
 
