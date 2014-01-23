@@ -1,3 +1,7 @@
+git HEAD
+
+    * Travel::Status::DE::URE::Result: Fix countdown_sec accessor
+
 Travel::Status::DE::URA 0.02 - Thu Dec 26 2013
 
     * aseag-m: Fix spaces in stop names (they didn't match anything)
