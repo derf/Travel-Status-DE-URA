@@ -6,6 +6,8 @@ use 5.010;
 
 use parent 'Class::Accessor';
 
+use DateTime::Format::Duration;
+
 our $VERSION = '0.02';
 
 Travel::Status::DE::URA::Result->mk_ro_accessors(
@@ -30,10 +32,10 @@ sub countdown {
 
 sub countdown_sec {
 	my ($self) = @_;
+	my $secpattern = DateTime::Format::Duration->new( pattern => '%s' );
 
-	$self->{countdown_sec}
-	  //= $self->datetime->subtract_datetime( $self->{dt_now} )
-	  ->in_units('seconds');
+	$self->{countdown_sec} //= $secpattern->format_duration(
+		$self->datetime->subtract_datetime( $self->{dt_now} ) );
 
 	return $self->{countdown_sec};
 }
