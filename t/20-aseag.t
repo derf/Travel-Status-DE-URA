@@ -6,7 +6,7 @@ use utf8;
 
 use Encode qw(decode);
 use List::Util qw(first);
-use Test::More tests => 13;
+use Test::More tests => 14;
 
 BEGIN {
 	use_ok('Travel::Status::DE::URA');
@@ -37,6 +37,18 @@ is( $s->errstr, undef, 'errstr is not set' );
 my @results = $s->results;
 
 is( @results, 16208, 'All departures parsed and returned' );
+
+# results are sorted by time
+my $prev = $results[0];
+my $ok = 1;
+for my $i (1 .. $#results) {
+	my $cur = $results[$i];
+	if ($prev->datetime->epoch > $cur->datetime->epoch) {
+		$ok = 0;
+		last;
+	}
+}
+ok($ok, 'Results are ordered by departure');
 
 # hide_past => 1 should return nothing
 
