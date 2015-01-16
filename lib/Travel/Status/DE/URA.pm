@@ -220,8 +220,8 @@ __END__
 
 =head1 NAME
 
-Travel::Status::DE::URA - unofficial departure monitor for URA-based
-realtime data providers (e.g. ASEAG)
+Travel::Status::DE::URA - unofficial departure monitor for "Unified Realtime
+API" data providers (e.g. ASEAG)
 
 =head1 SYNOPSIS
 
