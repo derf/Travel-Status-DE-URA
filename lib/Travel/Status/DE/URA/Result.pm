@@ -52,6 +52,10 @@ sub time {
 	return $self->datetime->strftime('%H:%M:%S');
 }
 
+sub type {
+	return 'Bus';
+}
+
 sub route_timetable {
 	my ($self) = @_;
 
@@ -149,6 +153,11 @@ The stop ID belonging to this departure.
 =item $departure->time
 
 Departure time (HH:MM:SS).
+
+=item $departure->type
+
+Vehicle type for this departure. At the moment, this always returns "Bus".
+This option exists for compatibility with other Travel::Status libraries.
 
 =back
 
