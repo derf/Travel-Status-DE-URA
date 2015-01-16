@@ -138,7 +138,7 @@ The number of the line.
 If the B<results> method of Travel::Status::DE::URA(3pm) was called with
 B<full_routes> => true:
 Returns a list of arrayrefs describing the entire route. I.e.
-C<< [[$time1, $stop1], [$time2, $stop2], ...] >>.
+C<< ([$time1, $stop1], [$time2, $stop2], ...) >>.
 The times are DateTime::Duration(3pm) objects, the stops are only names,
 not IDs (subject to change).  Returns an empty list otherwise.
 
