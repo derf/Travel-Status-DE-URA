@@ -1,3 +1,12 @@
+Travel::Status::DE::URA 0.04 - Thu Mar 12 2015
+
+    * New dependency: Text::CSV
+    * Fix ASEAG parser (was fragile and broken by changes in the backend output)
+    * TRavel::Status::DE::URA::Result: Add ->type accessor for compatibility
+      with other TRavel::Status modules (always returns "Bus" at the moment)
+    * Encoding is hard - it may be broken if your LWP::UserAgent or perl is
+      too old
+
 Travel::Status::DE::URA 0.03 - Thu Jan 23 2014
 
     * Result: Relative times (countdown, countdown_sec) are now computed
