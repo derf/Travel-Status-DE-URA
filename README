@@ -13,6 +13,7 @@ Dependencies
  * DateTime::Format::Duration
  * List::MoreUtils
  * LWP::UserAgent
+ * Text::CSV
 
 
 Installation

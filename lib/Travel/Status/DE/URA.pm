@@ -13,6 +13,7 @@ use DateTime;
 use Encode qw(encode decode);
 use List::MoreUtils qw(firstval none uniq);
 use LWP::UserAgent;
+use Text::CSV;
 use Travel::Status::DE::URA::Result;
 
 sub new {
@@ -60,11 +61,12 @@ sub new {
 		return $self;
 	}
 
-	$self->{raw_str} = $response->decoded_content;
+	$self->{raw_str} = encode( 'UTF-8', $response->decoded_content );
+
+	# Fix encoding in case we're running through test files
 	if ( substr( $self->{ura_instant_url}, 0, 5 ) eq 'file:' ) {
 		$self->{raw_str} = encode( 'UTF-8', $self->{raw_str} );
 	}
-
 	$self->parse_raw_data;
 
 	return $self;
@@ -72,6 +74,7 @@ sub new {
 
 sub parse_raw_data {
 	my ($self) = @_;
+	my $csv = Text::CSV->new( { binary => 1 } );
 
 	for my $dep ( split( /\r\n/, $self->{raw_str} ) ) {
 		$dep =~ s{^\[}{};
@@ -79,7 +82,8 @@ sub parse_raw_data {
 
 		# first field == 4 => version information, no departure
 		if ( substr( $dep, 0, 1 ) != 4 ) {
-			my @fields = split( /"?,"?/, $dep );
+			$csv->parse($dep);
+			my @fields = $csv->fields;
 			push( @{ $self->{raw_list} },   \@fields );
 			push( @{ $self->{stop_names} }, $fields[1] );
 		}

@@ -25,6 +25,7 @@ Module::Build->new(
 		'Getopt::Long' => 0,
 		'List::MoreUtils' => 0,
 		'LWP::UserAgent' => 0,
+		'Text::CSV' => 0,
 	},
 	sign => 1,
 
