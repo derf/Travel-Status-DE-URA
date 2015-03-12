@@ -61,7 +61,7 @@ sub new {
 		return $self;
 	}
 
-	$self->{raw_str} = encode( 'UTF-8', $response->decoded_content );
+	$self->{raw_str} = $response->decoded_content;
 
 	# Fix encoding in case we're running through test files
 	if ( substr( $self->{ura_instant_url}, 0, 5 ) eq 'file:' ) {
@@ -84,7 +84,10 @@ sub parse_raw_data {
 		if ( substr( $dep, 0, 1 ) != 4 ) {
 			$csv->parse($dep);
 			my @fields = $csv->fields;
-			push( @{ $self->{raw_list} },   \@fields );
+			push( @{ $self->{raw_list} }, \@fields );
+			for my $i ( 1, 6 ) {
+				$fields[$i] = encode( 'UTF-8', $fields[$i] );
+			}
 			push( @{ $self->{stop_names} }, $fields[1] );
 		}
 	}
