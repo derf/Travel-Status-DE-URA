@@ -19,7 +19,9 @@ use Travel::Status::DE::URA::Result;
 sub new {
 	my ( $class, %opt ) = @_;
 
-	my $ua = LWP::UserAgent->new(%opt);
+	my %lwp_options = %{ $opt{lwp_options} // { timeout => 10 } };
+
+	my $ua = LWP::UserAgent->new(%lwp_options);
 	my $response;
 
 	if ( not( $opt{ura_base} and $opt{ura_version} ) ) {
@@ -283,6 +285,17 @@ The version, may be any string.
 The request URL is I<ura_base>/instant_VI<version>, so for
 C<< http://ivu.aseag.de/interfaces/ura >>, C<< 1 >> this module will point
 requests to C<< http://ivu.aseag.de/interfaces/ura/instant_V1 >>.
+
+The following parameter is optional:
+
+=over
+
+=item B<lwp_options> => I<\%hashref>
+
+Passed on to C<< LWP::UserAgent->new >>. Defaults to C<< { timeout => 10 } >>,
+you can use an empty hashref to override it.
+
+=back
 
 Additionally, all options supported by C<< $status->results >> may be specified
 here, causing them to be used as defaults. Note that while they may be
