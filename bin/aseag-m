@@ -258,7 +258,7 @@ See DateTime::Format::Duration(3pm) for allowed patterns.
 
 =item B<-v>, B<--via> I<stop>
 
-Only show lines which will also service I<stop> after I<name>. With B<-b>,
+Only show lines which also serve I<stop>. When used with B<-b>,
 I<stop> must be in the schedule before I<name>, with B<-f> it may be anywhere,
 with B<-a> (and by default) it must be after I<name>.
 
