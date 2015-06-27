@@ -87,7 +87,10 @@ sub display_result {
 		printf( join( q{  }, @format ) . "\n", @{$line}[ 0 .. 2 ] );
 
 		if ($full_route) {
-			print "\n" . $line->[3] . "\n\n\n";
+			for my $route ( @{ $line->[3] } ) {
+				printf( join( q{  }, @format ) . "\n", @{$route} );
+			}
+			print "\n";
 		}
 	}
 
@@ -134,49 +137,46 @@ sub show_results {
 		if ( ( @grep_lines and not( $d->line ~~ \@grep_lines ) ) ) {
 			next;
 		}
+		my @line;
 
 		if ($relative_times) {
-			push(
-				@output,
+			@line = (
+				$dt_format->format_duration(
+					$d->datetime->subtract_datetime($dt_now)
+				),
+				$d->line,
+				$d->destination,
 				[
-					$dt_format->format_duration(
-						$d->datetime->subtract_datetime($dt_now)
-					),
-					$d->line,
-					$d->destination,
-					join(
-						"\n",
-						map {
-							sprintf(
-								'%s  %s',
-								$dt_format->format_duration(
-									$_->[0]->subtract_datetime($dt_now)
-								),
-								$_->[1]
-							  )
-						} $d->route_timetable
-					)
+					map {
+						[
+							$dt_format->format_duration(
+								$_->[0]->subtract_datetime($dt_now)
+							),
+							q{},
+							$_->[1]
+						]
+					} $d->route_timetable
 				]
 			);
 		}
 		else {
-			push(
-				@output,
+			@line = (
+				$d->datetime->strftime($strftime_format),
+				$d->line,
+				$d->destination,
 				[
-					$d->datetime->strftime($strftime_format),
-					$d->line,
-					$d->destination,
-					join(
-						"\n",
-						map {
-							sprintf( '%s  %s',
-								$_->[0]->strftime($strftime_format),
-								$_->[1] )
-						} $d->route_timetable
-					)
+					map {
+						[ $_->[0]->strftime($strftime_format), q{}, $_->[1] ]
+					} $d->route_timetable
 				]
 			);
 		}
+
+		if ( $full_route and $full_route eq 'before' ) {
+			@{ $line[3] } = reverse @{ $line[3] };
+		}
+
+		push( @output, \@line );
 	}
 
 	display_result(@output);
