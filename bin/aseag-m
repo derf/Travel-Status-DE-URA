@@ -11,30 +11,29 @@ binmode( STDOUT, ':encoding(utf-8)' );
 
 use DateTime;
 use DateTime::Format::Duration;
-use Getopt::Long qw(:config no_ignore_case);
+use Getopt::Long qw(:config no_ignore_case bundling);
 use List::Util qw(max);
 use Travel::Status::DE::ASEAG;
 
 my (@grep_lines);
-my $full_route      = 0;
 my $hide_past       = 1;
 my $relative_times  = 0;
 my $strftime_format = '%H:%M:%S';
 my $strfrel_format  = '%M min';
+my ( %edata, @edata_pre );
+my $full_route;
 my $via;
 
 GetOptions(
-	'a|route-after'  => sub { $full_route = 'after' },
-	'b|route-before' => sub { $full_route = 'before' },
-	'h|help'         => sub { show_help(0) },
-	'f|full-route'   => \$full_route,
-	'l|line=s@'      => \@grep_lines,
-	'p|with-past'    => sub { $hide_past  = 0 },
-	'r|relative'     => \$relative_times,
-	's|strftime=s'   => \$strftime_format,
-	'S|strfrel=s'    => \$strfrel_format,
-	'v|via=s'        => \$via,
-	'V|version'      => \&show_version,
+	'h|help'      => sub { show_help(0) },
+	'l|line=s@'   => \@grep_lines,
+	'o|output=s@' => \@edata_pre,
+	'p|with-past' => sub { $hide_past = 0 },
+	'r|relative' => \$relative_times,
+	's|strftime=s' => \$strftime_format,
+	'S|strfrel=s'  => \$strfrel_format,
+	'v|via=s'      => \$via,
+	'V|version'    => \&show_version,
 
 ) or show_help(1);
 
@@ -43,7 +42,26 @@ if ( @ARGV != 1 ) {
 }
 
 # --line=foo,bar support
+@edata_pre  = split( qr{,}, join( q{,}, @edata_pre ) );
 @grep_lines = split( qr{,}, join( q{,}, @grep_lines ) );
+
+for my $efield (@edata_pre) {
+	given ($efield) {
+		when ('a') { $edata{route_after}  = 1 }
+		when ('b') { $edata{route_before} = 1 }
+		when ('f') { $edata{route_full}   = 1 }
+		default    { $edata{$efield}      = 1 }
+	}
+}
+if ( $edata{route_full} ) {
+	$full_route = 1;
+}
+elsif ( $edata{route_after} ) {
+	$full_route = 'after';
+}
+elsif ( $edata{route_before} ) {
+	$full_route = 'before';
+}
 
 my ($stop_name) = @ARGV;
 
@@ -173,7 +191,7 @@ sub show_results {
 			);
 		}
 
-		if ( $full_route and $full_route eq 'before' ) {
+		if ( $edata{route_before} ) {
 			@{ $line[3] } = reverse @{ $line[3] };
 		}
 
