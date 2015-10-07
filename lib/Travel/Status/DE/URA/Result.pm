@@ -59,14 +59,14 @@ sub type {
 sub route_interesting {
 	my ( $self, $max_parts ) = @_;
 
-	my @via = map { $_->[1] } @{ $self->{route_timetable} };
+	my @via = map { $_->[1] } @{ $self->{route_post} };
 
 	my ( @via_main, @via_show, $last_stop );
 	$max_parts //= 3;
 
 	for my $stop (@via) {
 		if (
-			$stop->name_suf =~ m{ bf | hbf | Flughafen | bahnhof
+			$stop =~ m{ bf | hbf | Flughafen | bahnhof
 				| Krankenhaus | Klinik | bushof | busstation }iox
 		  )
 		{
@@ -75,14 +75,14 @@ sub route_interesting {
 	}
 	$last_stop = pop(@via);
 
-	if ( @via_main and $via_main[-1] == $last_stop ) {
+	if ( @via_main and $via_main[-1] eq $last_stop ) {
 		pop(@via_main);
 	}
-	if ( @via and $via[-1] == $last_stop ) {
+	if ( @via and $via[-1] eq $last_stop ) {
 		pop(@via);
 	}
 
-	if ( @via_main and @via and $via[0] == $via_main[0] ) {
+	if ( @via_main and @via and $via[0] eq $via_main[0] ) {
 		shift(@via_main);
 	}
 
