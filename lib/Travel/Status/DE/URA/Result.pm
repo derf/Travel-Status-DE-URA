@@ -189,14 +189,27 @@ The name of the line.
 
 The number of the line.
 
-=item $departure->route_timetable
+=item $departure->route_interesting(I<num_stops>)
 
 If the B<results> method of Travel::Status::DE::URA(3pm) was called with
-B<full_routes> => true:
-Returns a list of arrayrefs describing the entire route. I.e.
+B<calculate_routes> => true:
+Returns up to I<num_stops> (defaults to 3) stops considered interesting
+(usually of major importance in the transit area). Returns only stop names,
+not the arrival/departure times. Note that the importance is determined
+heuristically based on the stop name, so it is not always accurate.
+
+=item $departure->route_pre
+
+If the B<results> method of Travel::Status::DE::URA(3pm) was called with
+B<calculate_routes> => true:
+Returns a list of arrayrefs describing all stops after the requested one. I.e.
 C<< ([$time1, $stop1], [$time2, $stop2], ...) >>.
 The times are DateTime::Duration(3pm) objects, the stops are only names,
 not IDs (subject to change).  Returns an empty list otherwise.
+
+=item $departure->route_post
+
+Same as B<route_pre>, but contains the stops before the requested one.
 
 =item $departure->stop
 
