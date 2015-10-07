@@ -56,6 +56,56 @@ sub type {
 	return 'Bus';
 }
 
+sub route_interesting {
+	my ( $self, $max_parts ) = @_;
+
+	my @via = map { $_->[1] } @{ $self->{route_timetable} };
+
+	my ( @via_main, @via_show, $last_stop );
+	$max_parts //= 3;
+
+	for my $stop (@via) {
+		if (
+			$stop->name_suf =~ m{ bf | hbf | Flughafen | bahnhof
+				| Krankenhaus | Klinik | bushof | busstation }iox
+		  )
+		{
+			push( @via_main, $stop );
+		}
+	}
+	$last_stop = pop(@via);
+
+	if ( @via_main and $via_main[-1] == $last_stop ) {
+		pop(@via_main);
+	}
+	if ( @via and $via[-1] == $last_stop ) {
+		pop(@via);
+	}
+
+	if ( @via_main and @via and $via[0] == $via_main[0] ) {
+		shift(@via_main);
+	}
+
+	if ( @via < $max_parts ) {
+		@via_show = @via;
+	}
+	else {
+		if ( @via_main >= $max_parts ) {
+			@via_show = ( $via[0] );
+		}
+		else {
+			@via_show = splice( @via, 0, $max_parts - @via_main );
+		}
+
+		while ( @via_show < $max_parts and @via_main ) {
+			my $stop = shift(@via_main);
+			push( @via_show, $stop );
+		}
+	}
+
+	return @via_show;
+}
+
 sub route_timetable {
 	my ($self) = @_;
 
