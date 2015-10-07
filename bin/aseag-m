@@ -21,7 +21,7 @@ my $relative_times  = 0;
 my $strftime_format = '%H:%M:%S';
 my $strfrel_format  = '%M min';
 my ( %edata, @edata_pre );
-my $full_route;
+my $calculate_routes = 0;
 my $via;
 
 GetOptions(
@@ -47,20 +47,11 @@ if ( @ARGV != 1 ) {
 
 for my $efield (@edata_pre) {
 	given ($efield) {
-		when ('a') { $edata{route_after}  = 1 }
-		when ('b') { $edata{route_before} = 1 }
-		when ('f') { $edata{route_full}   = 1 }
+		when ('a') { $edata{route_after}  = 1; $calculate_routes = 1 }
+		when ('b') { $edata{route_before} = 1; $calculate_routes = 1 }
+		when ('f') { $edata{route_full}   = 1; $calculate_routes = 1 }
 		default    { $edata{$efield}      = 1 }
 	}
-}
-if ( $edata{route_full} ) {
-	$full_route = 1;
-}
-elsif ( $edata{route_after} ) {
-	$full_route = 'after';
-}
-elsif ( $edata{route_before} ) {
-	$full_route = 'before';
 }
 
 my ($stop_name) = @ARGV;
@@ -104,7 +95,7 @@ sub display_result {
 
 		printf( join( q{  }, @format ) . "\n", @{$line}[ 0 .. 2 ] );
 
-		if ($full_route) {
+		if ( @{ $line->[3] } ) {
 			for my $route ( @{ $line->[3] } ) {
 				printf( join( q{  }, @format ) . "\n", @{$route} );
 			}
@@ -136,6 +127,29 @@ sub get_exact_stop_name {
 	}
 }
 
+sub show_route {
+	my ( $dt_now, $dt_format, @routes ) = @_;
+	my @res;
+
+	if ($relative_times) {
+		@res = map {
+			[
+				$dt_format->format_duration(
+					$_->[0]->subtract_datetime($dt_now)
+				),
+				q{},
+				$_->[1]
+			]
+		} @routes;
+	}
+	else {
+		@res = map { [ $_->[0]->strftime($strftime_format), q{}, $_->[1] ] }
+		  @routes;
+	}
+
+	return @res;
+}
+
 sub show_results {
 	my @output;
 
@@ -145,10 +159,10 @@ sub show_results {
 
 	for my $d (
 		$status->results(
-			full_routes => $full_route,
-			hide_past   => $hide_past,
-			stop        => $stop_name,
-			via         => $via,
+			calculate_routes => $calculate_routes,
+			hide_past        => $hide_past,
+			stop             => $stop_name,
+			via              => $via,
 		)
 	  )
 	{
@@ -156,7 +170,17 @@ sub show_results {
 		if ( ( @grep_lines and not( $d->line ~~ \@grep_lines ) ) ) {
 			next;
 		}
-		my @line;
+		my ( @line, @route );
+
+		if ( $edata{route_full} ) {
+			@route = ( $d->route_pre, $d->route_post );
+		}
+		elsif ( $edata{route_after} ) {
+			@route = $d->route_post;
+		}
+		elsif ( $edata{route_before} ) {
+			@route = $d->route_pre;
+		}
 
 		if ($relative_times) {
 			@line = (
@@ -165,29 +189,14 @@ sub show_results {
 				),
 				$d->line,
 				$d->destination,
-				[
-					map {
-						[
-							$dt_format->format_duration(
-								$_->[0]->subtract_datetime($dt_now)
-							),
-							q{},
-							$_->[1]
-						]
-					} $d->route_timetable
-				],
+				[ show_route( $dt_now, $dt_format, @route ) ],
 			);
 		}
 		else {
 			@line = (
 				$d->datetime->strftime($strftime_format),
-				$d->line,
-				$d->destination,
-				[
-					map {
-						[ $_->[0]->strftime($strftime_format), q{}, $_->[1] ]
-					} $d->route_timetable
-				],
+				$d->line, $d->destination,
+				[ show_route( $dt_now, $dt_format, @route ) ],
 			);
 		}
 

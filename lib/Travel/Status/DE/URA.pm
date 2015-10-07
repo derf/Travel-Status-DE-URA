@@ -33,7 +33,7 @@ sub new {
 		  // DateTime->now( time_zone => 'Europe/Berlin' ),
 		ura_base    => $opt{ura_base},
 		ura_version => $opt{ura_version},
-		full_routes => $opt{full_routes} // 0,
+		full_routes => $opt{calculate_routes} // 0,
 		hide_past   => $opt{hide_past} // 1,
 		stop        => $opt{stop},
 		via         => $opt{via},
@@ -122,16 +122,16 @@ sub results {
 	my ( $self, %opt ) = @_;
 	my @results;
 
-	my $full_routes = $opt{full_routes} // $self->{full_routes} // 0;
-	my $hide_past   = $opt{hide_past}   // $self->{hide_past}   // 1;
-	my $stop        = $opt{stop}        // $self->{stop};
-	my $via         = $opt{via}         // $self->{via};
+	my $full_routes = $opt{calculate_routes} // $self->{full_routes} // 0;
+	my $hide_past   = $opt{hide_past}        // $self->{hide_past}   // 1;
+	my $stop        = $opt{stop}             // $self->{stop};
+	my $via         = $opt{via}              // $self->{via};
 
 	my $dt_now = $self->{datetime};
 	my $ts_now = $dt_now->epoch;
 
 	if ($via) {
-		$full_routes ||= 'after';
+		$full_routes = 1;
 	}
 
 	for my $dep ( @{ $self->{raw_list} } ) {
@@ -140,7 +140,7 @@ sub results {
 			$u1, $stopname, $stopid,    $lineid, $linename,
 			$u2, $dest,     $vehicleid, $tripid, $timestamp
 		) = @{$dep};
-		my @route;
+		my ( @route_pre, @route_post );
 
 		if ( $stop and not( $stopname eq $stop ) ) {
 			next;
@@ -164,31 +164,30 @@ sub results {
 		my $ts_dep = $dt_dep->epoch;
 
 		if ($full_routes) {
-			@route = map { [ $_->[9] / 1000, $_->[1] ] }
+			my @route = map { [ $_->[9] / 1000, $_->[1] ] }
 			  grep { $_->[8] == $tripid } @{ $self->{raw_list} };
 
-			if ( $full_routes eq 'before' ) {
-				@route = grep { $_->[0] < $ts_dep } @route;
-			}
-			elsif ( $full_routes eq 'after' ) {
-				@route = grep { $_->[0] > $ts_dep } @route;
-			}
+			@route_pre  = grep { $_->[0] < $ts_dep } @route;
+			@route_post = grep { $_->[0] > $ts_dep } @route;
 
 			if ( $via
-				and none { $_->[1] eq $via } @route )
+				and none { $_->[1] eq $via } @route_post )
 			{
 				next;
 			}
 
 			if ($hide_past) {
-				@route = grep { $_->[0] >= $ts_now } @route;
+				@route_pre = grep { $_->[0] >= $ts_now } @route_pre;
 			}
 
-			@route = map { $_->[0] }
+			@route_pre = map { $_->[0] }
 			  sort { $a->[1] <=> $b->[1] }
-			  map { [ $_, $_->[0] ] } @route;
+			  map { [ $_, $_->[0] ] } @route_pre;
+			@route_post = map { $_->[0] }
+			  sort { $a->[1] <=> $b->[1] }
+			  map { [ $_, $_->[0] ] } @route_post;
 
-			@route = map {
+			@route_pre = map {
 				[
 					DateTime->from_epoch(
 						epoch     => $_->[0],
@@ -196,20 +195,30 @@ sub results {
 					),
 					decode( 'UTF-8', $_->[1] )
 				]
-			} @route;
+			} @route_pre;
+			@route_post = map {
+				[
+					DateTime->from_epoch(
+						epoch     => $_->[0],
+						time_zone => 'Europe/Berlin'
+					),
+					decode( 'UTF-8', $_->[1] )
+				]
+			} @route_post;
 		}
 
 		push(
 			@results,
 			Travel::Status::DE::URA::Result->new(
-				datetime        => $dt_dep,
-				dt_now          => $dt_now,
-				line            => $linename,
-				line_id         => $lineid,
-				destination     => decode( 'UTF-8', $dest ),
-				route_timetable => [@route],
-				stop            => $stopname,
-				stop_id         => $stopid,
+				datetime    => $dt_dep,
+				dt_now      => $dt_now,
+				line        => $linename,
+				line_id     => $lineid,
+				destination => decode( 'UTF-8', $dest ),
+				route_pre   => [@route_pre],
+				route_post  => [@route_post],
+				stop        => $stopname,
+				stop_id     => $stopid,
 			)
 		);
 	}

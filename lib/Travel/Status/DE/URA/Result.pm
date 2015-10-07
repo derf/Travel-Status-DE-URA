@@ -106,10 +106,16 @@ sub route_interesting {
 	return @via_show;
 }
 
-sub route_timetable {
+sub route_pre {
 	my ($self) = @_;
 
-	return @{ $self->{route_timetable} };
+	return @{ $self->{route_pre} };
+}
+
+sub route_post {
+	my ($self) = @_;
+
+	return @{ $self->{route_post} };
 }
 
 sub TO_JSON {
