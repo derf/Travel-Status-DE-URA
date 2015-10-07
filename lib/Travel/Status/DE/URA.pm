@@ -292,7 +292,7 @@ The version, may be any string.
 =back
 
 The request URL is I<ura_base>/instant_VI<version>, so for
-C<< http://ivu.aseag.de/interfaces/ura >>, C<< 1 >> this module will point
+C<< http://ivu.aseag.de/interfaces/ura >>, C<< 1 >> this module will send
 requests to C<< http://ivu.aseag.de/interfaces/ura/instant_V1 >>.
 
 The following parameter is optional:
@@ -332,14 +332,11 @@ Accepted parameters (all are optional):
 
 =over
 
-=item B<full_routes> => B<before>|B<after>|I<bool> (default 0)
+=item B<calculate_routes> => I<bool> (default 0)
 
-When set to a true value: Compute B<route_timetable> fields in all
-Travel::Status::DE::URA::Result(3pm) objects, otherwise they will not be
-set.
-
-B<before> / B<after> limits the timetable to stops before / after the stop
-I<name> (if set).
+When set to a true value: Compute routes for all results, enabling use of
+their B<route_> accessors. Otherwise, those will just return nothing
+(undef / empty list, depending on context).
 
 =item B<hide_past> => I<bool> (default 1)
 
