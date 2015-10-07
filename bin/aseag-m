@@ -17,7 +17,6 @@ use Travel::Status::DE::ASEAG;
 
 my (@grep_lines);
 my $hide_past       = 1;
-my $relative_times  = 0;
 my $strftime_format = '%H:%M:%S';
 my $strfrel_format  = '%M min';
 my ( %edata, @edata_pre );
@@ -29,7 +28,6 @@ GetOptions(
 	'l|line=s@'   => \@grep_lines,
 	'o|output=s@' => \@edata_pre,
 	'p|with-past' => sub { $hide_past = 0 },
-	'r|relative' => \$relative_times,
 	's|strftime=s' => \$strftime_format,
 	'S|strfrel=s'  => \$strfrel_format,
 	'v|via=s'      => \$via,
@@ -50,7 +48,8 @@ for my $efield (@edata_pre) {
 		when ('a') { $edata{route_after}  = 1; $calculate_routes = 1 }
 		when ('b') { $edata{route_before} = 1; $calculate_routes = 1 }
 		when ('f') { $edata{route_full}   = 1; $calculate_routes = 1 }
-		default    { $edata{$efield}      = 1 }
+		when ('T') { $edata{relative_times} = 1 }
+		default { $edata{$efield} = 1 }
 	}
 }
 
@@ -82,7 +81,7 @@ sub display_result {
 		die("Nothing to show\n");
 	}
 
-	if ($relative_times) {
+	if ( $edata{relative_times} ) {
 		$format[0] = q{%};
 	}
 
@@ -131,7 +130,7 @@ sub show_route {
 	my ( $dt_now, $dt_format, @routes ) = @_;
 	my @res;
 
-	if ($relative_times) {
+	if ( $edata{relative_times} ) {
 		@res = map {
 			[
 				$dt_format->format_duration(
@@ -182,7 +181,7 @@ sub show_results {
 			@route = $d->route_pre;
 		}
 
-		if ($relative_times) {
+		if ( $edata{relative_times} ) {
 			@line = (
 				$dt_format->format_duration(
 					$d->datetime->subtract_datetime($dt_now)
