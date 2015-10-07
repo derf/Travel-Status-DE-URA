@@ -60,7 +60,8 @@ my $status = Travel::Status::DE::ASEAG->new;
 sub show_help {
 	my ($code) = @_;
 
-	print "Usage: aseag-m [-abfprV] [-l <lines>] [-v <stopname>] <stopname>\n"
+	print 'Usage: aseag-m [-pV] [-o <output>] [-l <lines>] [-v <stopname>] '
+	  . "<stopname>\n"
 	  . "See also: man aseag-m\n";
 
 	exit $code;
@@ -230,7 +231,8 @@ aseag-m - Unofficial interface to the ASEAG departure monitor
 
 =head1 SYNOPSIS
 
-B<aseag-m> [B<-abfprV>] [B<-l> I<lines>] [B<-s> I<timefmt> | B<-S> I<timefmt>]
+B<aseag-m> [B<-pV>] [B<-l> I<lines>] [B<-o> I<outputtypes>]
+[B<-s> I<timefmt> | B<-S> I<timefmt>]
 [B<-v> I<stopname>] I<stopname>
 
 =head1 VERSION
@@ -245,33 +247,46 @@ B<aseag-m> lists upcoming bus departures at the ASEAG stop I<name>.
 
 =over
 
-=item B<-a>, B<--route-after>
-
-For each departure, include the route leading to I<name>. Both stop names and
-departure times are shown.
-
-=item B<-b>, B<--route-before>
-
-For each departure, include the route after I<name>. Both stop names and
-departure times are shown.
-
-=item B<-f>, B<--full-route>
-
-For each departure, include the entire route (stop names and departure times).
-
 =item B<-l>, B<--line> I<lines>
 
 Limit output to departures of I<lines> (comma-separated list of line
 names, may be used multiple times).
 
+=item B<-o>, B<--output> I<outputtypes>
+
+Format output according to I<outputtypes>. I<outputtypes> is a
+comma-separated list and the B<--output> option may be repeated. Each
+output type has both a short and a long form, so for instance both
+C<< -or,T >> and C<< --output=route_interesting,relative_times >> are valid.
+
+Valid output types are:
+
+=over
+
+=item a / route_after
+
+For each departure, include the route after I<name>. Both stop names and
+departure times are shown.
+
+=item b / route_before
+
+For each departure, include the route leading to I<name>. Both stop names and
+departure times are shown.
+
+=item f / route_full
+
+For each departure, include the entire route (stop names and departure times).
+
+=item T / relative_times
+
+Show relative times. Applies to departure and route output.
+
+=back
+
 =item B<-p>, B<--with-past>
 
 Include past departures. Applies both to the departure output and to the
 route output of B<-a>, B<-b>, B<-f>.
-
-=item B<-r>, B<--relative>
-
-Show relative times. Appleas both to departure and route output.
 
 =item B<-s>, B<--strftime> I<format>
 
