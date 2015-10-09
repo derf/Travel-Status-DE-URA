@@ -15,6 +15,7 @@ use List::MoreUtils qw(firstval none uniq);
 use LWP::UserAgent;
 use Text::CSV;
 use Travel::Status::DE::URA::Result;
+use Travel::Status::DE::URA::Stop;
 
 sub new {
 	my ( $class, %opt ) = @_;
@@ -188,22 +189,22 @@ sub results {
 			  map { [ $_, $_->[0] ] } @route_post;
 
 			@route_pre = map {
-				[
-					DateTime->from_epoch(
+				Travel::Status::DE::URA::Stop->new(
+					datetime => DateTime->from_epoch(
 						epoch     => $_->[0],
 						time_zone => 'Europe/Berlin'
 					),
-					decode( 'UTF-8', $_->[1] )
-				]
+					name => decode( 'UTF-8', $_->[1] )
+				  )
 			} @route_pre;
 			@route_post = map {
-				[
-					DateTime->from_epoch(
+				Travel::Status::DE::URA::Stop->new(
+					datetime => DateTime->from_epoch(
 						epoch     => $_->[0],
 						time_zone => 'Europe/Berlin'
 					),
-					decode( 'UTF-8', $_->[1] )
-				]
+					name => decode( 'UTF-8', $_->[1] )
+				  )
 			} @route_post;
 		}
 

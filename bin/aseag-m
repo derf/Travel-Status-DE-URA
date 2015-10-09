@@ -136,16 +136,18 @@ sub show_route {
 		@res = map {
 			[
 				$dt_format->format_duration(
-					$_->[0]->subtract_datetime($dt_now)
+					$_->datetime->subtract_datetime($dt_now)
 				),
 				q{},
-				$_->[1]
+				$_->name,
+				q{},
 			]
 		} @routes;
 	}
 	else {
-		@res = map { [ $_->[0]->strftime($strftime_format), q{}, $_->[1] ] }
-		  @routes;
+		@res = map {
+			[ $_->datetime->strftime($strftime_format), q{}, $_->name, q{}, ]
+		} @routes;
 	}
 
 	return @res;

@@ -59,7 +59,7 @@ sub type {
 sub route_interesting {
 	my ( $self, $max_parts ) = @_;
 
-	my @via = map { $_->[1] } @{ $self->{route_post} };
+	my @via = map { $_->name } @{ $self->{route_post} };
 
 	my ( @via_main, @via_show, $last_stop );
 	$max_parts //= 3;
