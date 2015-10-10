@@ -265,9 +265,10 @@ version 0.04
 
 =head1 DESCRIPTION
 
-Travel::Status::DE::URA is an unofficial interface URA-based realtime departure
-monitors (as used e.g. by the ASEAG).  It reports all upcoming departures at a
-given place in real-time.  Schedule information is not included.
+Travel::Status::DE::URA is an unofficial interface to URA-based realtime
+departure monitors (as used e.g. by the ASEAG).  It reports all upcoming
+departures at a given place in real-time.  Schedule information is not
+included.
 
 =head1 METHODS
 
@@ -308,9 +309,9 @@ you can use an empty hashref to override it.
 =back
 
 Additionally, all options supported by C<< $status->results >> may be specified
-here, causing them to be used as defaults. Note that while they may be
-overridden later, they may limit the set of available departures requested from
-the server.
+here, causing them to be used as defaults. Note that while they can be
+overridden later, they may limit the set of departures requested from the
+server.
 
 =item $status->errstr
 
@@ -349,11 +350,8 @@ Only return departures at stop I<name>.
 
 =item B<via> => I<vianame>
 
-Only return departures containing I<vianame> in their route. If B<stop> is set,
-I<vianame> must be in the route after the stop I<name>. If, in addition to
-that, B<full_routes> is set to B<before>, I<vianame> must be in the route
-before the stop I<name>. Implies C<< full_routes> => 'after' >> unless
-B<full_routes> is explicitly set to B<before> / B<after> / 1.
+Only return departures containing I<vianame> in their route after their
+corresponding stop. Implies B<calculate_routes>=1.
 
 =back
 
@@ -375,6 +373,8 @@ None.
 
 =item * LWP::UserAgent(3pm)
 
+=item * Text::CSV(3pm)
+
 =back
 
 =head1 BUGS AND LIMITATIONS
@@ -387,7 +387,7 @@ Travel::Status::DE::URA::Result(3pm).
 
 =head1 AUTHOR
 
-Copyright (C) 2013 by Daniel Friesel E<lt>derf@finalrewind.orgE<gt>
+Copyright (C) 2013-2015 by Daniel Friesel E<lt>derf@finalrewind.orgE<gt>
 
 =head1 LICENSE
 

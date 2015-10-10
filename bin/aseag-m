@@ -308,9 +308,7 @@ See DateTime::Format::Duration(3pm) for allowed patterns.
 
 =item B<-v>, B<--via> I<stop>
 
-Only show lines which also serve I<stop>. When used with B<-b>,
-I<stop> must be in the schedule before I<name>, with B<-f> it may be anywhere,
-with B<-a> (and by default) it must be after I<name>.
+Only show lines which also serve I<stop> after I<name>.
 
 =item B<-V>, B<--version>
 
@@ -340,6 +338,8 @@ None.
 
 =item * LWP::UserAgent(3pm)
 
+=item * Text::CSV(3pm)
+
 =back
 
 =head1 BUGS AND LIMITATIONS
@@ -348,7 +348,7 @@ Unknown.
 
 =head1 AUTHOR
 
-Copyright (C) 2013 by Daniel Friesel E<lt>derf@finalrewind.orgE<gt>
+Copyright (C) 2013-2015 by Daniel Friesel E<lt>derf@finalrewind.orgE<gt>
 
 =head1 LICENSE
 

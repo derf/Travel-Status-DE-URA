@@ -89,7 +89,7 @@ aseag-m(1), Travel::Status::DE::URA(3pm).
 
 =head1 AUTHOR
 
-Copyright (C) 2013 by Daniel Friesel E<lt>derf@finalrewind.orgE<gt>
+Copyright (C) 2013-2015 by Daniel Friesel E<lt>derf@finalrewind.orgE<gt>
 
 =head1 LICENSE
 
