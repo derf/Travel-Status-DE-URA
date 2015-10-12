@@ -288,6 +288,12 @@ departure times are shown.
 
 For each departure, include the entire route (stop names and departure times).
 
+=item r / route_interesting
+
+For each departure, show up to three "interesting" stops between I<name> and
+its destination. The importance of a stop is determined heuristically based on
+its name, so it is not always accurate.
+
 =item T / relative_times
 
 Show relative times. Applies to departure and route output.
@@ -297,7 +303,7 @@ Show relative times. Applies to departure and route output.
 =item B<-p>, B<--with-past>
 
 Include past departures. Applies both to the departure output and to the
-route output of B<-a>, B<-b>, B<-f>.
+route output of B<-oa>, B<-ob>, B<-of>.
 
 =item B<-s>, B<--strftime> I<format>
 
@@ -306,7 +312,7 @@ output.  See DateTime(3pm) for allowed patterns.
 
 =item B<-S>, B<--strfrel> I<format>
 
-Format relative times in I<format>, only applies when used with B<-r>.
+Format relative times in I<format>, only applies when used with B<-oT>.
 See DateTime::Format::Duration(3pm) for allowed patterns.
 
 =item B<-v>, B<--via> I<stop>
