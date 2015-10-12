@@ -32,13 +32,14 @@ sub new {
 	my $self = {
 		datetime => $opt{datetime}
 		  // DateTime->now( time_zone => 'Europe/Berlin' ),
-		ura_base    => $opt{ura_base},
-		ura_version => $opt{ura_version},
-		full_routes => $opt{calculate_routes} // 0,
-		hide_past   => $opt{hide_past} // 1,
-		stop        => $opt{stop},
-		via         => $opt{via},
-		post        => {
+		developer_mode => $opt{developer_mode},
+		ura_base       => $opt{ura_base},
+		ura_version    => $opt{ura_version},
+		full_routes    => $opt{calculate_routes} // 0,
+		hide_past      => $opt{hide_past} // 1,
+		stop           => $opt{stop},
+		via            => $opt{via},
+		post           => {
 			ReturnList =>
 			  'lineid,linename,directionid,destinationtext,vehicleid,'
 			  . 'tripid,estimatedtime,stopid,stoppointname'
@@ -65,6 +66,10 @@ sub new {
 	}
 
 	$self->{raw_str} = $response->decoded_content;
+
+	if ( $self->{developer_mode} ) {
+		say $self->{raw_str};
+	}
 
 	# Fix encoding in case we're running through test files
 	if ( substr( $self->{ura_instant_url}, 0, 5 ) eq 'file:' ) {
