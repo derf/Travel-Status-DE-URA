@@ -59,14 +59,13 @@ sub type {
 sub route_interesting {
 	my ( $self, $max_parts ) = @_;
 
-	my @via = map { $_->name } @{ $self->{route_post} };
-
+	my @via = $self->route_post;
 	my ( @via_main, @via_show, $last_stop );
 	$max_parts //= 3;
 
 	for my $stop (@via) {
 		if (
-			$stop =~ m{ bf | hbf | Flughafen | bahnhof
+			$stop->name =~ m{ bf | hbf | Flughafen | bahnhof
 				| Krankenhaus | Klinik | bushof | busstation }iox
 		  )
 		{
@@ -75,14 +74,14 @@ sub route_interesting {
 	}
 	$last_stop = pop(@via);
 
-	if ( @via_main and $via_main[-1] eq $last_stop ) {
+	if ( @via_main and $via_main[-1] == $last_stop ) {
 		pop(@via_main);
 	}
-	if ( @via and $via[-1] eq $last_stop ) {
+	if ( @via and $via[-1] == $last_stop ) {
 		pop(@via);
 	}
 
-	if ( @via_main and @via and $via[0] eq $via_main[0] ) {
+	if ( @via_main and @via and $via[0] == $via_main[0] ) {
 		shift(@via_main);
 	}
 
@@ -192,20 +191,21 @@ The number of the line.
 =item $departure->route_interesting(I<num_stops>)
 
 If the B<results> method of Travel::Status::DE::URA(3pm) was called with
-B<calculate_routes> => true:
-Returns up to I<num_stops> (defaults to 3) stops considered interesting
-(usually of major importance in the transit area). Returns only stop names,
-not the arrival/departure times. Note that the importance is determined
-heuristically based on the stop name, so it is not always accurate.
+B<calculate_routes> => true: Returns a list of up to I<num_stops> (defaults to
+3) stops considered interesting (usually of major importance in the transit
+area). Each stop is a Travel::Status::DE::URA::Stop(3pm) object.  Note that the
+importance is determined heuristically based on the stop name, so it is not
+always accurate.
+
+Returns an empty list if B<calculate_routes> was false.
 
 =item $departure->route_pre
 
 If the B<results> method of Travel::Status::DE::URA(3pm) was called with
 B<calculate_routes> => true:
-Returns a list of arrayrefs describing all stops after the requested one. I.e.
-C<< ([$time1, $stop1], [$time2, $stop2], ...) >>.
-The times are DateTime::Duration(3pm) objects, the stops are only names,
-not IDs (subject to change).  Returns an empty list otherwise.
+Returns a list containing all stops after the requested one.
+Each stop is a Travel::Status::DE::URA::Stop(3pm) object.
+Returns an empty list otherwise.
 
 =item $departure->route_post
 
@@ -213,7 +213,7 @@ Same as B<route_pre>, but contains the stops before the requested one.
 
 =item $departure->stop
 
-The stop belonging to this departure.
+The stop (name, not object) belonging to this departure.
 
 =item $departure->stop_id
 
@@ -263,7 +263,7 @@ Unknown.
 
 =head1 SEE ALSO
 
-Travel::Status::DE::URA(3pm).
+Travel::Status::DE::URA(3pm), Travel::Status::DE::URA::Stop(3pm).
 
 =head1 AUTHOR
 

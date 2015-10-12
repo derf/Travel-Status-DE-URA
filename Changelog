@@ -5,9 +5,9 @@ git HEAD
     * URA->new: Rename full_routes option to calculate_routes. The before/after
       parameters are no longer supported, instead any true parameter causes
       all routes to be calculated
-    * URA::Stop: Remove route_timetable accessor. Use route_pre / route_post
+    * URA::Result: Remove route_timetable accessor. Use route_pre / route_post
       instead
-    * Ura::Stop: Add route_pre, route_post and route_interesting accessors
+    * Ura::Result: Add route_pre, route_post and route_interesting accessors
     * new module: Travel::Status::DE::URA::Stop (describes a stop as a part
       of a departure's route)
 

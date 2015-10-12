@@ -209,7 +209,7 @@ sub show_results {
 		}
 
 		if ( $edata{route_interesting} ) {
-			$line[2] = join( q{  }, $d->route_interesting );
+			$line[2] = join( q{  }, map { $_->name } $d->route_interesting );
 		}
 
 		push( @output, \@line );
