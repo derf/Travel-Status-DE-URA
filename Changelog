@@ -1,6 +1,6 @@
 git HEAD
 
-    * aseag-m: renamed -a / -b / -f / -r to -oa / -ob / -of / -oT
+    * aseag-m: Rename -a / -b / -f / -r to -oa / -ob / -of / -oT
     * aseag-m: New option -or (show partial route)
     * URA->new: Rename full_routes option to calculate_routes. The before/after
       parameters are no longer supported, instead any true parameter causes
