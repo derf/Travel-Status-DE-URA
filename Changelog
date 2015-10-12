@@ -1,4 +1,4 @@
-git HEAD
+Travel::Status::DE::URA 0.05 - Mon Oct 12 2015
 
     * aseag-m: Rename -a / -b / -f / -r to -oa / -ob / -of / -oT
     * aseag-m: New option -or (show partial route)
