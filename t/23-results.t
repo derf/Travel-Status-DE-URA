@@ -5,7 +5,7 @@ use 5.010;
 use utf8;
 
 use List::Util qw(first);
-use Test::More tests => 7;
+use Test::More tests => 10;
 
 BEGIN {
 	use_ok('Travel::Status::DE::URA');
@@ -33,7 +33,10 @@ $s = Travel::Status::DE::URA->new(
 # results[0]: "Kohlscheid Bahnhof","210717","34","34",1,"Kohlscheid Bahnhof","586"
 
 is($results[0]->countdown, 2, '->countdown: 2');
+is($results[0]->countdown, 2, '->countdown: 2 (cached)');
 is($results[0]->countdown_sec, 120, '->countdown_sec with sec 0 -> sec 0 : 120');
+is($results[0]->countdown_sec, 120, '->countdown_sec with sec 0 -> sec 0 : 120 (cached)');
 is($results[0]->date, '23.12.2013', '->date');
 isa_ok($results[0]->datetime, 'DateTime', '->datetime is DateTime');
 is($results[0]->time, '12:44:00', '->time');
+is($results[0]->type, 'Bus', '->type');
