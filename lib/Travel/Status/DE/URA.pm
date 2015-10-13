@@ -65,26 +65,26 @@ sub new {
 		return $self;
 	}
 
-	$self->{raw_str} = $response->decoded_content;
+	my $raw_str = $response->decoded_content;
 
 	if ( $self->{developer_mode} ) {
-		say $self->{raw_str};
+		say $raw_str;
 	}
 
 	# Fix encoding in case we're running through test files
 	if ( substr( $self->{ura_instant_url}, 0, 5 ) eq 'file:' ) {
-		$self->{raw_str} = encode( 'UTF-8', $self->{raw_str} );
+		$raw_str = encode( 'UTF-8', $raw_str );
 	}
-	$self->parse_raw_data;
+	$self->parse_raw_data($raw_str);
 
 	return $self;
 }
 
 sub parse_raw_data {
-	my ($self) = @_;
+	my ($self, $raw_str) = @_;
 	my $csv = Text::CSV->new( { binary => 1 } );
 
-	for my $dep ( split( /\r\n/, $self->{raw_str} ) ) {
+	for my $dep ( split( /\r\n/, $raw_str ) ) {
 		$dep =~ s{^\[}{};
 		$dep =~ s{\]$}{};
 
@@ -232,8 +232,6 @@ sub results {
 	@results = map { $_->[0] }
 	  sort { $a->[1] <=> $b->[1] }
 	  map { [ $_, $_->datetime->epoch ] } @results;
-
-	$self->{results} = \@results;
 
 	return @results;
 }
