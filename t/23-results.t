@@ -5,7 +5,7 @@ use 5.010;
 use utf8;
 
 use List::Util qw(first);
-use Test::More tests => 10;
+use Test::More tests => 18;
 
 BEGIN {
 	use_ok('Travel::Status::DE::URA');
@@ -40,3 +40,14 @@ is($results[0]->date, '23.12.2013', '->date');
 isa_ok($results[0]->datetime, 'DateTime', '->datetime is DateTime');
 is($results[0]->time, '12:44:00', '->time');
 is($results[0]->type, 'Bus', '->type');
+
+# same-ish for TO_JSON
+
+isa_ok($results[0]->TO_JSON->{datetime}, 'DateTime', 'TO_JSON.datetime isa DateTime');
+is($results[0]->TO_JSON->{datetime}->strftime('%Y%m%d%H%M%S'), '20131223124400', 'TO_JSON.datetime');
+is($results[0]->TO_JSON->{datetime}, $results[0]->datetime, 'TO_JSON.datetime');
+is($results[0]->TO_JSON->{destination}, $results[0]->destination, 'TO_JSON.destination');
+is($results[0]->TO_JSON->{line}, $results[0]->line, 'TO_JSON.line');
+is($results[0]->TO_JSON->{line_id}, $results[0]->line_id, 'TO_JSON.line_id');
+is($results[0]->TO_JSON->{stop}, $results[0]->stop, 'TO_JSON.stop');
+is($results[0]->TO_JSON->{stop_id}, $results[0]->stop_id, 'TO_JSON.stop_id');
