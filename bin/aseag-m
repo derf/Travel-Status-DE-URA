@@ -253,6 +253,8 @@ version 0.05
 =head1 DESCRIPTION
 
 B<aseag-m> lists upcoming bus departures at the ASEAG stop I<name>.
+It only shows realtime data and has no knowledge of schedules or delays.
+Departures without such data may not appear at all.
 
 =head1 OPTIONS
 
@@ -299,6 +301,11 @@ its name, so it is not always accurate.
 Show relative times. Applies to departure and route output.
 
 =back
+
+Note that the routes may be incomplete, since the backend only provides a
+limited amount of departures and the routes are calculated from this set.
+intermediate stops are always included, but both route_after and route_before
+may be cut off after / before any stop. The same applies to route_full.
 
 =item B<-p>, B<--with-past>
 
