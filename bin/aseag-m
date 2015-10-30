@@ -189,7 +189,7 @@ sub show_results {
 			@route = show_route( $dt_now, $dt_format, $d->route_post );
 		}
 		elsif ( $edata{route_before} ) {
-			@route = show_route( $dt_now, $dt_format, $d->route_pre );
+			@route = reverse show_route( $dt_now, $dt_format, $d->route_pre );
 		}
 
 		if ( $edata{relative_times} ) {
@@ -208,10 +208,6 @@ sub show_results {
 				$d->datetime->strftime($strftime_format),
 				$d->line, q{}, $d->destination, \@route,
 			);
-		}
-
-		if ( $edata{route_before} ) {
-			@{ $line[4] } = reverse @{ $line[4] };
 		}
 
 		if ( $edata{route_interesting} ) {
