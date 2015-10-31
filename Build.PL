@@ -10,6 +10,7 @@ Module::Build->new(
 		'File::Slurp' => 0,
 		'Test::More' => 0,
 		'Test::Pod' => 0,
+		'Test::Fatal' => 0,
 	},
 	configure_requires => {
 		'Module::Build' => 0.40,

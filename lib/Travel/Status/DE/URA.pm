@@ -6,7 +6,7 @@ use 5.010;
 
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
 
-our $VERSION = '0.05';
+our $VERSION = '1.00';
 
 use Carp qw(confess cluck);
 use DateTime;
@@ -81,7 +81,7 @@ sub new {
 }
 
 sub parse_raw_data {
-	my ($self, $raw_str) = @_;
+	my ( $self, $raw_str ) = @_;
 	my $csv = Text::CSV->new( { binary => 1 } );
 
 	for my $dep ( split( /\r\n/, $raw_str ) ) {
@@ -264,7 +264,7 @@ API" data providers (e.g. ASEAG)
 
 =head1 VERSION
 
-version 0.05
+version 1.00
 
 =head1 DESCRIPTION
 

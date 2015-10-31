@@ -1,3 +1,10 @@
+Travel::Status::DE::URA 1.00 - Sat Oct 31 2015
+
+    * Reduce memory footprint
+    * aseag-m: -of: Show delimiter between route before and after the
+      requseted stop
+    * aseag-m: Do not erroneously reverse stop list when combining -oa and -ob
+
 Travel::Status::DE::URA 0.05 - Mon Oct 12 2015
 
     * aseag-m: Rename -a / -b / -f / -r to -oa / -ob / -of / -oT
