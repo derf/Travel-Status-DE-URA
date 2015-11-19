@@ -88,7 +88,7 @@ is( $s->errstr, undef, 'errstr is not set' );
 # stop neither in name nor in results should return everything
 my @results = $s->results;
 
-is( @results, 16208, 'All departures parsed and returned' );
+is( @results, 16197, 'All departures parsed and returned' );
 
 # results are sorted by time
 my $prev = $results[0];

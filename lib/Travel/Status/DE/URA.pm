@@ -8,6 +8,15 @@ no if $] >= 5.018, warnings => 'experimental::smartmatch';
 
 our $VERSION = '1.00';
 
+# create CONSTANTS for different Return Types
+use constant {
+	TYPE_STOP => 0,
+	TYPE_PREDICTION => 1,
+	TYPE_MESSAGE => 2,
+	TYPE_BASE => 3,
+	TYPE_URA => 4,
+};
+
 use Carp qw(confess cluck);
 use DateTime;
 use Encode qw(encode decode);
@@ -39,10 +48,15 @@ sub new {
 		hide_past      => $opt{hide_past} // 1,
 		stop           => $opt{stop},
 		via            => $opt{via},
+		viaID          => $opt{viaID},
+		stopID         => $opt{stopID},
+		lineID         => $opt{lineID},
+		circle         => $opt{circle},
 		post           => {
-			ReturnList =>
-			  'lineid,linename,directionid,destinationtext,vehicleid,'
-			  . 'tripid,estimatedtime,stopid,stoppointname'
+			# show all stops
+			StopAlso => 'True',
+			# for easier debugging ordered in the returned order
+			ReturnList => 'stoppointname,stopid,latitude,longitude,lineid,linename,directionid,destinationtext,vehicleid,tripid,estimatedtime'
 		},
 	};
 
@@ -54,6 +68,25 @@ sub new {
 	$ua->env_proxy;
 
 	if ( substr( $self->{ura_instant_url}, 0, 5 ) ne 'file:' ) {
+		# filter by stopID only if full_routes is not set
+		if (not $self->{full_routes} and $self->{stopID}) {
+			$self->{post}{StopID} = $self->{stopID};
+
+			# filter for via as well to make via work
+			$self->{post}{StopID} .= ','.$self->{viaID} if $self->{viaID};
+		}
+
+		# filter by line
+		if ($self->{lineID}) {
+			$self->{post}{LineID} = $self->{lineID};
+		}
+
+		# filter for Stops in circle (lon,lat,dist)
+		if ($self->{circle}) {
+			$self->{post}{Circle} = $self->{circle};
+		}
+
+
 		$response = $ua->post( $self->{ura_instant_url}, $self->{post} );
 	}
 	else {
@@ -88,14 +121,34 @@ sub parse_raw_data {
 		$dep =~ s{^\[}{};
 		$dep =~ s{\]$}{};
 
-		# first field == 4 => version information, no departure
-		if ( substr( $dep, 0, 1 ) != 4 ) {
-			$csv->parse($dep);
-			my @fields = $csv->fields;
-			push( @{ $self->{raw_list} }, \@fields );
-			for my $i ( 1, 6 ) {
-				$fields[$i] = encode( 'UTF-8', $fields[$i] );
+		$csv->parse($dep);
+		my @fields = $csv->fields;
+
+		# encode all fields
+		for my $i ( 1, 11 ) {
+			$fields[$i] = encode( 'UTF-8', $fields[$i] );
+		}
+
+		push( @{ $self->{raw_list} }, \@fields );
+
+		my $type = $fields[0];
+
+		if ( $type == TYPE_STOP ) {
+			my $stop_name = $fields[1];
+			my $stop_id = $fields[2];
+			my $longitude = $fields[3];
+			my $latitude = $fields[4];
+			# create Stop Dict
+			if (!$self->{stops}{$stop_id}) {
+				$self->{stops}{$stop_id} = Travel::Status::DE::URA::Stop->new(
+						name => decode( 'UTF-8', $stop_name ),
+						id => $stop_id,
+						longitude => $longitude,
+						latitude => $latitude,
+					)
 			}
+		}
+		if ( $type == TYPE_PREDICTION ) {
 			push( @{ $self->{stop_names} }, $fields[1] );
 		}
 	}
@@ -118,6 +171,12 @@ sub get_stop_by_name {
 	return ( grep { $_ =~ m{$name}i } @{ $self->{stop_names} } );
 }
 
+sub get_stops {
+	my ($self) = @_;
+
+	return $self->{stops};
+}
+
 sub errstr {
 	my ($self) = @_;
 
@@ -131,24 +190,33 @@ sub results {
 	my $full_routes = $opt{calculate_routes} // $self->{full_routes} // 0;
 	my $hide_past   = $opt{hide_past}        // $self->{hide_past}   // 1;
 	my $stop        = $opt{stop}             // $self->{stop};
+	my $stop_id     = $opt{stopID}           // $self->{stopID};
 	my $via         = $opt{via}              // $self->{via};
+	my $via_id      = $opt{viaID}            // $self->{viaID};
 
 	my $dt_now = $self->{datetime};
 	my $ts_now = $dt_now->epoch;
 
-	if ($via) {
+	if ($via or $via_id) {
 		$full_routes = 1;
 	}
 
 	for my $dep ( @{ $self->{raw_list} } ) {
 
 		my (
-			$u1, $stopname, $stopid,    $lineid, $linename,
-			$u2, $dest,     $vehicleid, $tripid, $timestamp
+			$type, $stopname, $stopid, $longitude, $latitude, $lineid, $linename,
+			$directionid, $dest, $vehicleid, $tripid, $timestamp
 		) = @{$dep};
 		my ( @route_pre, @route_post );
 
-		if ( $stop and not( $stopname eq $stop ) ) {
+		# only work on Prediction informations
+		next unless $type == TYPE_PREDICTION;
+
+		if ( $stop and not( $stopname eq $stop )) {
+			next;
+		}
+
+		if ( $stop_id and not( $stopid eq $stop_id )) {
 			next;
 		}
 
@@ -170,14 +238,20 @@ sub results {
 		my $ts_dep = $dt_dep->epoch;
 
 		if ($full_routes) {
-			my @route = map { [ $_->[9] / 1000, $_->[1] ] }
-			  grep { $_->[8] == $tripid } @{ $self->{raw_list} };
+			my @route = map { [ $_->[11] / 1000, $_->[1], $_->[2], $_->[3], $_->[4]] }
+			  grep { $_->[10] == $tripid } grep {$_->[0] == 1} @{ $self->{raw_list} };
 
 			@route_pre  = grep { $_->[0] < $ts_dep } @route;
 			@route_post = grep { $_->[0] > $ts_dep } @route;
 
 			if ( $via
 				and none { $_->[1] eq $via } @route_post )
+			{
+				next;
+			}
+
+			if ( $via_id
+				and none { $_->[2] eq $via_id } @route_post )
 			{
 				next;
 			}
@@ -199,8 +273,11 @@ sub results {
 						epoch     => $_->[0],
 						time_zone => 'Europe/Berlin'
 					),
-					name => decode( 'UTF-8', $_->[1] )
-				  )
+					name => decode( 'UTF-8', $_->[1] ),
+					id => $_->[2],
+					longitude => $_->[3],
+					latitude => $_->[4],
+				)
 			} @route_pre;
 			@route_post = map {
 				Travel::Status::DE::URA::Stop->new(
@@ -208,8 +285,11 @@ sub results {
 						epoch     => $_->[0],
 						time_zone => 'Europe/Berlin'
 					),
-					name => decode( 'UTF-8', $_->[1] )
-				  )
+					name => decode( 'UTF-8', $_->[1] ),
+					id => $_->[2],
+					longitude => $_->[3],
+					latitude => $_->[4],
+				)
 			} @route_post;
 		}
 
@@ -220,7 +300,7 @@ sub results {
 				dt_now      => $dt_now,
 				line        => $linename,
 				line_id     => $lineid,
-				destination => decode( 'UTF-8', $dest ),
+				destination => $dest,
 				route_pre   => [@route_pre],
 				route_post  => [@route_post],
 				stop        => $stopname,
@@ -334,6 +414,11 @@ Returns a list of Travel::Status::DE::URA::Result(3pm) objects, each describing
 one departure.
 
 Accepted parameters (all are optional):
+
+=item $status->get_stops()
+
+Returns a list of all Stops returned by the Request. 
+This is usefull for circle requests, to find nearby Stops.
 
 =over
 
