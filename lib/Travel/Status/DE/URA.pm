@@ -10,11 +10,11 @@ our $VERSION = '1.00';
 
 # create CONSTANTS for different Return Types
 use constant {
-	TYPE_STOP => 0,
+	TYPE_STOP       => 0,
 	TYPE_PREDICTION => 1,
-	TYPE_MESSAGE => 2,
-	TYPE_BASE => 3,
-	TYPE_URA => 4,
+	TYPE_MESSAGE    => 2,
+	TYPE_BASE       => 3,
+	TYPE_URA        => 4,
 };
 
 use Carp qw(confess cluck);
@@ -53,10 +53,14 @@ sub new {
 		lineID         => $opt{lineID},
 		circle         => $opt{circle},
 		post           => {
+
 			# show all stops
 			StopAlso => 'True',
+
 			# for easier debugging ordered in the returned order
-			ReturnList => 'stoppointname,stopid,latitude,longitude,lineid,linename,directionid,destinationtext,vehicleid,tripid,estimatedtime'
+			ReturnList => 'stoppointname,stopid,latitude,longitude,lineid,'
+			  . 'linename,directionid,destinationtext,vehicleid,tripid,'
+			  . 'estimatedtime'
 		},
 	};
 
@@ -68,24 +72,24 @@ sub new {
 	$ua->env_proxy;
 
 	if ( substr( $self->{ura_instant_url}, 0, 5 ) ne 'file:' ) {
+
 		# filter by stopID only if full_routes is not set
-		if (not $self->{full_routes} and $self->{stopID}) {
+		if ( not $self->{full_routes} and $self->{stopID} ) {
 			$self->{post}{StopID} = $self->{stopID};
 
 			# filter for via as well to make via work
-			$self->{post}{StopID} .= ','.$self->{viaID} if $self->{viaID};
+			$self->{post}{StopID} .= ',' . $self->{viaID} if $self->{viaID};
 		}
 
 		# filter by line
-		if ($self->{lineID}) {
+		if ( $self->{lineID} ) {
 			$self->{post}{LineID} = $self->{lineID};
 		}
 
 		# filter for Stops in circle (lon,lat,dist)
-		if ($self->{circle}) {
+		if ( $self->{circle} ) {
 			$self->{post}{Circle} = $self->{circle};
 		}
-
 
 		$response = $ua->post( $self->{ura_instant_url}, $self->{post} );
 	}
@@ -135,17 +139,18 @@ sub parse_raw_data {
 
 		if ( $type == TYPE_STOP ) {
 			my $stop_name = $fields[1];
-			my $stop_id = $fields[2];
+			my $stop_id   = $fields[2];
 			my $longitude = $fields[3];
-			my $latitude = $fields[4];
+			my $latitude  = $fields[4];
+
 			# create Stop Dict
-			if (!$self->{stops}{$stop_id}) {
+			if ( !$self->{stops}{$stop_id} ) {
 				$self->{stops}{$stop_id} = Travel::Status::DE::URA::Stop->new(
-						name => decode( 'UTF-8', $stop_name ),
-						id => $stop_id,
-						longitude => $longitude,
-						latitude => $latitude,
-					)
+					name      => decode( 'UTF-8', $stop_name ),
+					id        => $stop_id,
+					longitude => $longitude,
+					latitude  => $latitude,
+				);
 			}
 		}
 		if ( $type == TYPE_PREDICTION ) {
@@ -197,26 +202,27 @@ sub results {
 	my $dt_now = $self->{datetime};
 	my $ts_now = $dt_now->epoch;
 
-	if ($via or $via_id) {
+	if ( $via or $via_id ) {
 		$full_routes = 1;
 	}
 
 	for my $dep ( @{ $self->{raw_list} } ) {
 
 		my (
-			$type, $stopname, $stopid, $longitude, $latitude, $lineid, $linename,
-			$directionid, $dest, $vehicleid, $tripid, $timestamp
+			$type,     $stopname,  $stopid,   $longitude,
+			$latitude, $lineid,    $linename, $directionid,
+			$dest,     $vehicleid, $tripid,   $timestamp
 		) = @{$dep};
 		my ( @route_pre, @route_post );
 
 		# only work on Prediction informations
 		next unless $type == TYPE_PREDICTION;
 
-		if ( $stop and not( $stopname eq $stop )) {
+		if ( $stop and not( $stopname eq $stop ) ) {
 			next;
 		}
 
-		if ( $stop_id and not( $stopid eq $stop_id )) {
+		if ( $stop_id and not( $stopid eq $stop_id ) ) {
 			next;
 		}
 
@@ -238,8 +244,10 @@ sub results {
 		my $ts_dep = $dt_dep->epoch;
 
 		if ($full_routes) {
-			my @route = map { [ $_->[11] / 1000, $_->[1], $_->[2], $_->[3], $_->[4]] }
-			  grep { $_->[10] == $tripid } grep {$_->[0] == 1} @{ $self->{raw_list} };
+			my @route
+			  = map { [ $_->[11] / 1000, $_->[1], $_->[2], $_->[3], $_->[4] ] }
+			  grep { $_->[10] == $tripid }
+			  grep { $_->[0] == 1 } @{ $self->{raw_list} };
 
 			@route_pre  = grep { $_->[0] < $ts_dep } @route;
 			@route_post = grep { $_->[0] > $ts_dep } @route;
@@ -273,11 +281,11 @@ sub results {
 						epoch     => $_->[0],
 						time_zone => 'Europe/Berlin'
 					),
-					name => decode( 'UTF-8', $_->[1] ),
-					id => $_->[2],
+					name      => decode( 'UTF-8', $_->[1] ),
+					id        => $_->[2],
 					longitude => $_->[3],
-					latitude => $_->[4],
-				)
+					latitude  => $_->[4],
+				  )
 			} @route_pre;
 			@route_post = map {
 				Travel::Status::DE::URA::Stop->new(
@@ -285,11 +293,11 @@ sub results {
 						epoch     => $_->[0],
 						time_zone => 'Europe/Berlin'
 					),
-					name => decode( 'UTF-8', $_->[1] ),
-					id => $_->[2],
+					name      => decode( 'UTF-8', $_->[1] ),
+					id        => $_->[2],
 					longitude => $_->[3],
-					latitude => $_->[4],
-				)
+					latitude  => $_->[4],
+				  )
 			} @route_post;
 		}
 
