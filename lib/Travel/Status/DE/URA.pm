@@ -105,7 +105,7 @@ sub new {
 	my $raw_str = $response->decoded_content;
 
 	if ( $self->{developer_mode} ) {
-		say $raw_str;
+		say decode('UTF-8', $raw_str);
 	}
 
 	# Fix encoding in case we're running through test files
