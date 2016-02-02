@@ -78,7 +78,9 @@ sub new {
 			$self->{post}{StopID} = $self->{stopID};
 
 			# filter for via as well to make via work
-			$self->{post}{StopID} .= ',' . $self->{viaID} if $self->{viaID};
+			if ( defined $self->{viaId} ) {
+				$self->{post}{StopID} .= q{,} . $self->{viaID};
+			}
 		}
 
 		# filter by line
@@ -105,7 +107,7 @@ sub new {
 	my $raw_str = $response->decoded_content;
 
 	if ( $self->{developer_mode} ) {
-		say decode('UTF-8', $raw_str);
+		say decode( 'UTF-8', $raw_str );
 	}
 
 	# Fix encoding in case we're running through test files
@@ -144,7 +146,7 @@ sub parse_raw_data {
 			my $latitude  = $fields[4];
 
 			# create Stop Dict
-			if ( !$self->{stops}{$stop_id} ) {
+			if ( not exists $self->{stops}{$stop_id} ) {
 				$self->{stops}{$stop_id} = Travel::Status::DE::URA::Stop->new(
 					name      => decode( 'UTF-8', $stop_name ),
 					id        => $stop_id,
@@ -216,7 +218,9 @@ sub results {
 		my ( @route_pre, @route_post );
 
 		# only work on Prediction informations
-		next unless $type == TYPE_PREDICTION;
+		if ( $type != TYPE_PREDICTION ) {
+			next;
+		}
 
 		if ( $stop and not( $stopname eq $stop ) ) {
 			next;

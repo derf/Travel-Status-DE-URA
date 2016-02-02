@@ -1,3 +1,8 @@
+git HEAD
+
+    * URA->New: Add viaID, stopID, lineID and circle parameters
+    * URA: Add get_stops accessor
+
 Travel::Status::DE::URA 1.00 - Sat Oct 31 2015
 
     * Reduce memory footprint
