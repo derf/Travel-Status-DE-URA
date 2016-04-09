@@ -196,12 +196,12 @@ sub results {
 
 	my $full_routes = $opt{calculate_routes} // $self->{full_routes} // 0;
 	my $hide_past   = $opt{hide_past}        // $self->{hide_past}   // 1;
+	my $line_id     = $opt{line_id}          // $self->{line_id};
 	my $stop        = $opt{stop}             // $self->{stop};
 	my $stop_id     = $opt{stop_id}          // $self->{stop_id};
 	my $via         = $opt{via}              // $self->{via};
 	my $via_id      = $opt{via_id}           // $self->{via_id};
 
-	my $line_id     = $self->{line_id};
 
 	my $dt_now = $self->{datetime};
 	my $ts_now = $dt_now->epoch;
