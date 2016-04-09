@@ -1,4 +1,4 @@
-git HEAD
+Travel::Status::DE::URA 1.01 - Sat Apr 09 2016
 
     * URA->results: Add via_id, stop_id and line_id parameters
     * URA->new: Add circle and with_stops parameters
