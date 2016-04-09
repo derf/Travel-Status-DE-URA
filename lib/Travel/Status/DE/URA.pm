@@ -54,15 +54,16 @@ sub new {
 		circle         => $opt{circle},
 		post           => {
 
-			# show all stops
-			StopAlso => 'True',
-
 			# for easier debugging ordered in the returned order
 			ReturnList => 'stoppointname,stopid,latitude,longitude,lineid,'
 			  . 'linename,directionid,destinationtext,vehicleid,tripid,'
 			  . 'estimatedtime'
 		},
 	};
+
+	if ( $opt{with_stops} ) {
+		$self->{post}{StopAlso} = 'True';
+	}
 
 	$self->{ura_instant_url}
 	  = $self->{ura_base} . '/instant_V' . $self->{ura_version};
@@ -201,7 +202,6 @@ sub results {
 	my $stop_id     = $opt{stop_id}          // $self->{stop_id};
 	my $via         = $opt{via}              // $self->{via};
 	my $via_id      = $opt{via_id}           // $self->{via_id};
-
 
 	my $dt_now = $self->{datetime};
 	my $ts_now = $dt_now->epoch;
@@ -413,6 +413,12 @@ Only request departures for stops which are located up to I<dist> meters
 away from the location specified by I<lon> and I<lat>. Example parameter:
 "50.78496,6.10897,100".
 
+=item B<with_stops> => B<0>|B<1>
+
+When set to B<1> (or any other true value): Also request all stops satisfying
+the specified parameters. They can be accessed with B<get_stops>. Defaults to
+B<0>.
+
 =back
 
 Additionally, all options supported by C<< $status->results >> may be specified
@@ -437,6 +443,9 @@ parameter "bushof" will return "Aachen Bushof" and "Eupen Bushof", while
 Returns a hash reference describing all distinct stops returned by the request.
 Each key is the unique ID of a stop and contains a
 Travel::Status::DE::URA::Stop(3pm) object describing it.
+
+Only works when $status was created with B<with_stops> set to a true value.
+Otherwise, undef is returned.
 
 =item $status->results(I<%opt>)
 
