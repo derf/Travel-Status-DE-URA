@@ -48,9 +48,9 @@ sub new {
 		hide_past      => $opt{hide_past} // 1,
 		stop           => $opt{stop},
 		via            => $opt{via},
-		viaID          => $opt{viaID},
-		stopID         => $opt{stopID},
-		lineID         => $opt{lineID},
+		via_id         => $opt{via_id},
+		stop_id        => $opt{stop_id},
+		line_id        => $opt{line_id},
 		circle         => $opt{circle},
 		post           => {
 
@@ -73,19 +73,19 @@ sub new {
 
 	if ( substr( $self->{ura_instant_url}, 0, 5 ) ne 'file:' ) {
 
-		# filter by stopID only if full_routes is not set
-		if ( not $self->{full_routes} and $self->{stopID} ) {
-			$self->{post}{StopID} = $self->{stopID};
+		# filter by stop_id only if full_routes is not set
+		if ( not $self->{full_routes} and $self->{stop_id} ) {
+			$self->{post}{StopID} = $self->{stop_id};
 
 			# filter for via as well to make via work
-			if ( defined $self->{viaId} ) {
-				$self->{post}{StopID} .= q{,} . $self->{viaID};
+			if ( defined $self->{via_id} ) {
+				$self->{post}{StopID} .= q{,} . $self->{via_id};
 			}
 		}
 
 		# filter by line
-		if ( $self->{lineID} ) {
-			$self->{post}{LineID} = $self->{lineID};
+		if ( $self->{line_id} ) {
+			$self->{post}{LineID} = $self->{line_id};
 		}
 
 		# filter for Stops in circle (lon,lat,dist)
@@ -197,9 +197,9 @@ sub results {
 	my $full_routes = $opt{calculate_routes} // $self->{full_routes} // 0;
 	my $hide_past   = $opt{hide_past}        // $self->{hide_past}   // 1;
 	my $stop        = $opt{stop}             // $self->{stop};
-	my $stop_id     = $opt{stopID}           // $self->{stopID};
+	my $stop_id     = $opt{stop_id}          // $self->{stop_id};
 	my $via         = $opt{via}              // $self->{via};
-	my $via_id      = $opt{viaID}            // $self->{viaID};
+	my $via_id      = $opt{via_id}           // $self->{via_id};
 
 	my $dt_now = $self->{datetime};
 	my $ts_now = $dt_now->epoch;
