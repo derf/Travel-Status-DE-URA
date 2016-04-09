@@ -409,7 +409,9 @@ you can use an empty hashref to override it.
 
 =item B<circle> => I<lon,lat,dist>
 
-TODO
+Only request departures for stops which are located up to I<dist> meters
+away from the location specified by I<lon> and I<lat>. Example parameter:
+"50.78496,6.10897,100".
 
 =back
 
