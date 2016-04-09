@@ -201,6 +201,8 @@ sub results {
 	my $via         = $opt{via}              // $self->{via};
 	my $via_id      = $opt{via_id}           // $self->{via_id};
 
+	my $line_id     = $self->{line_id};
+
 	my $dt_now = $self->{datetime};
 	my $ts_now = $dt_now->epoch;
 
@@ -219,6 +221,10 @@ sub results {
 
 		# only work on Prediction informations
 		if ( $type != TYPE_PREDICTION ) {
+			next;
+		}
+
+		if ( $line_id and not( $lineid eq $line_id ) ) {
 			next;
 		}
 
@@ -392,7 +398,7 @@ The request URL is I<ura_base>/instant_VI<version>, so for
 C<< http://ivu.aseag.de/interfaces/ura >>, C<< 1 >> this module will send
 requests to C<< http://ivu.aseag.de/interfaces/ura/instant_V1 >>.
 
-The following parameter is optional:
+All remaining parameters are optional.
 
 =over
 
@@ -400,6 +406,10 @@ The following parameter is optional:
 
 Passed on to C<< LWP::UserAgent->new >>. Defaults to C<< { timeout => 10 } >>,
 you can use an empty hashref to override it.
+
+=item B<circle> => I<lon,lat,dist>
+
+TODO
 
 =back
 
@@ -420,17 +430,18 @@ Returns a list of stops matching I<$stopname>. For instance, if the stops
 parameter "bushof" will return "Aachen Bushof" and "Eupen Bushof", while
 "brand" will only return "Brand".
 
+=item $status->get_stops
+
+Returns a hash reference describing all distinct stops returned by the request.
+Each key is the unique ID of a stop and contains a
+Travel::Status::DE::URA::Stop(3pm) object describing it.
+
 =item $status->results(I<%opt>)
 
 Returns a list of Travel::Status::DE::URA::Result(3pm) objects, each describing
 one departure.
 
 Accepted parameters (all are optional):
-
-=item $status->get_stops()
-
-Returns a list of all Stops returned by the Request. 
-This is usefull for circle requests, to find nearby Stops.
 
 =over
 
@@ -444,13 +455,26 @@ their B<route_> accessors. Otherwise, those will just return nothing
 
 Do not include past departures in the result list and the computed timetables.
 
+=item B<line_id> => I<ID>
+
+Only return departures of line I<ID>.
+
 =item B<stop> => I<name>
 
 Only return departures at stop I<name>.
 
+=item B<stop_id> => I<ID>
+
+Only return departures at stop I<ID>.
+
 =item B<via> => I<vianame>
 
 Only return departures containing I<vianame> in their route after their
+corresponding stop. Implies B<calculate_routes>=1.
+
+=item B<via_id> => I<ID>
+
+Only return departures containing I<ID> in their route after their
 corresponding stop. Implies B<calculate_routes>=1.
 
 =back
