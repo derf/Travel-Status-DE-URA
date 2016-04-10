@@ -53,6 +53,7 @@ sub new {
 		line_id        => $opt{line_id},
 		circle         => $opt{circle},
 		post           => {
+			StopAlso => 'False',
 
 			# for easier debugging ordered in the returned order
 			ReturnList => 'stoppointname,stopid,latitude,longitude,lineid,'
