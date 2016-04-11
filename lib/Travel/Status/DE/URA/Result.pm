@@ -11,7 +11,7 @@ use DateTime::Format::Duration;
 our $VERSION = '1.01';
 
 Travel::Status::DE::URA::Result->mk_ro_accessors(
-	qw(datetime destination line line_id stop stop_id));
+	qw(datetime destination line line_id stop stop_id stop_indicator));
 
 sub new {
 	my ( $obj, %conf ) = @_;
@@ -218,6 +218,12 @@ The stop (name, not object) belonging to this departure.
 =item $departure->stop_id
 
 The stop ID belonging to this departure.
+
+=item $departure->stop_indicator
+
+The indicator for this departure at the corresponding stop, usually
+describes a platform or sub-stop number.  undef if the stop does not
+have such a distinction.
 
 =item $departure->time
 

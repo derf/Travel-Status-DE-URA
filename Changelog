@@ -1,3 +1,8 @@
+git HEAD
+
+    * Result: Add stop_indicator accessor
+    * aseag-m: New option -oi (show stop point indicators)
+
 Travel::Status::DE::URA 1.01 - Sat Apr 09 2016
 
     * URA->results: Add via_id, stop_id and line_id parameters

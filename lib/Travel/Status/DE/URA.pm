@@ -56,9 +56,9 @@ sub new {
 			StopAlso => 'False',
 
 			# for easier debugging ordered in the returned order
-			ReturnList => 'stoppointname,stopid,latitude,longitude,lineid,'
-			  . 'linename,directionid,destinationtext,vehicleid,tripid,'
-			  . 'estimatedtime'
+			ReturnList => 'stoppointname,stopid,stoppointindicator,'
+			  . 'latitude,longitude,lineid,linename,'
+			  . 'directionid,destinationtext,vehicleid,tripid,estimatedtime'
 		},
 	};
 
@@ -214,9 +214,10 @@ sub results {
 	for my $dep ( @{ $self->{raw_list} } ) {
 
 		my (
-			$type,     $stopname,  $stopid,   $longitude,
-			$latitude, $lineid,    $linename, $directionid,
-			$dest,     $vehicleid, $tripid,   $timestamp
+			$type,        $stopname, $stopid,    $stopindicator,
+			$longitude,   $latitude, $lineid,    $linename,
+			$directionid, $dest,     $vehicleid, $tripid,
+			$timestamp
 		) = @{$dep};
 		my ( @route_pre, @route_post );
 
@@ -256,8 +257,8 @@ sub results {
 
 		if ($full_routes) {
 			my @route
-			  = map { [ $_->[11] / 1000, $_->[1], $_->[2], $_->[3], $_->[4] ] }
-			  grep { $_->[10] == $tripid }
+			  = map { [ $_->[12] / 1000, $_->[1], $_->[2], $_->[4], $_->[5] ] }
+			  grep { $_->[11] == $tripid }
 			  grep { $_->[0] == 1 } @{ $self->{raw_list} };
 
 			@route_pre  = grep { $_->[0] < $ts_dep } @route;
@@ -315,15 +316,16 @@ sub results {
 		push(
 			@results,
 			Travel::Status::DE::URA::Result->new(
-				datetime    => $dt_dep,
-				dt_now      => $dt_now,
-				line        => $linename,
-				line_id     => $lineid,
-				destination => $dest,
-				route_pre   => [@route_pre],
-				route_post  => [@route_post],
-				stop        => $stopname,
-				stop_id     => $stopid,
+				datetime       => $dt_dep,
+				dt_now         => $dt_now,
+				line           => $linename,
+				line_id        => $lineid,
+				destination    => $dest,
+				route_pre      => [@route_pre],
+				route_post     => [@route_post],
+				stop           => $stopname,
+				stop_id        => $stopid,
+				stop_indicator => $stopindicator,
 			)
 		);
 	}

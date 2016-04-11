@@ -50,6 +50,7 @@ for my $efield (@edata_pre) {
 		when ('a') { $edata{route_after}       = 1; $calculate_routes = 1 }
 		when ('b') { $edata{route_before}      = 1; $calculate_routes = 1 }
 		when ('f') { $edata{route_full}        = 1; $calculate_routes = 1 }
+		when ('i') { $edata{indicator}         = 1 }
 		when ('r') { $edata{route_interesting} = 1; $calculate_routes = 1 }
 		when ('T') { $edata{relative_times}    = 1 }
 		default    { $edata{$efield}           = 1 }
@@ -80,27 +81,32 @@ sub show_version {
 sub display_result {
 	my (@lines) = @_;
 
-	my @format = qw(%- %- %- %-);
-
 	if ( not @lines ) {
 		die("Nothing to show\n");
 	}
 
+	my $max_col_idx = $#{ $lines[0] } - 1;
+
+	my @format = (q{%-}) x ( $max_col_idx + 1 );
+
 	if ( $edata{relative_times} ) {
 		$format[0] = q{%};
 	}
+	if ( $edata{indicator} ) {
+		$format[1] = q{%};
+	}
 
-	for my $i ( 0 .. 3 ) {
+	for my $i ( 0 .. $max_col_idx ) {
 		$format[$i] .= max map { length( $_->[$i] ) } @lines;
 		$format[$i] .= 's';
 	}
 
 	for my $line (@lines) {
 
-		printf( join( q{  }, @format ) . "\n", @{$line}[ 0 .. 3 ] );
+		printf( join( q{  }, @format ) . "\n", @{$line}[ 0 .. $max_col_idx ] );
 
-		if ( @{ $line->[4] } ) {
-			for my $route ( @{ $line->[4] } ) {
+		if ( @{ $line->[ $max_col_idx + 1 ] } ) {
+			for my $route ( @{ $line->[ $max_col_idx + 1 ] } ) {
 				printf( join( q{  }, @format ) . "\n", @{$route} );
 			}
 			print "\n";
@@ -210,6 +216,10 @@ sub show_results {
 			);
 		}
 
+		if ( $edata{indicator} ) {
+			splice( @line, 1, 0, $d->stop_indicator );
+		}
+
 		if ( $edata{route_interesting} ) {
 			$line[2] = join( q{  }, map { $_->name } $d->route_interesting );
 		}
@@ -288,6 +298,11 @@ departure times are shown.
 =item f / route_full
 
 For each departure, include the entire route (stop names and departure times).
+
+=item i / indicator
+
+Show stop point indicator, if available. This is usually a sub-stop or
+platform number, such as "H3".
 
 =item r / route_interesting
 
