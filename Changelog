@@ -1,4 +1,4 @@
-git HEAD
+Travel::Status::DE::URA 1.02 - Sat Apr 16 2016
 
     * Result: Add stop_indicator accessor
     * aseag-m: New option -oi (show stop point indicators)

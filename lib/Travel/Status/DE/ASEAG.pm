@@ -6,7 +6,7 @@ use 5.010;
 
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 use parent 'Travel::Status::DE::URA';
 
@@ -44,7 +44,7 @@ Travel::Status::DE::ASEAG - unofficial ASEAG departure monitor.
 
 =head1 VERSION
 
-version 1.01
+version 1.02
 
 =head1 DESCRIPTION
 

@@ -6,7 +6,7 @@ use 5.010;
 
 use parent 'Class::Accessor';
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 Travel::Status::DE::URA::Stop->mk_ro_accessors(qw(datetime name));
 
@@ -55,7 +55,7 @@ Travel::Status::DE::URA::Stop - Information about a stop
 
 =head1 VERSION
 
-version 1.01
+version 1.02
 
 =head1 DESCRIPTION
 
