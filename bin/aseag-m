@@ -92,9 +92,6 @@ sub display_result {
 	if ( $edata{relative_times} ) {
 		$format[0] = q{%};
 	}
-	if ( $edata{indicator} ) {
-		$format[1] = q{%};
-	}
 
 	for my $i ( 0 .. $max_col_idx ) {
 		$format[$i] .= max map { length( $_->[$i] ) } @lines;
