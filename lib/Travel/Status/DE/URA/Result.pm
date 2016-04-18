@@ -46,6 +46,12 @@ sub date {
 	return $self->datetime->strftime('%d.%m.%Y');
 }
 
+sub platform {
+	my ($self) = @_;
+
+	return $self->{stop_indicator};
+}
+
 sub time {
 	my ($self) = @_;
 
@@ -187,6 +193,10 @@ The name of the line.
 =item $departure->line_id
 
 The number of the line.
+
+=item $departure->platform
+
+Shortcut for $departure->stop_indicator, see there.
 
 =item $departure->route_interesting(I<num_stops>)
 
