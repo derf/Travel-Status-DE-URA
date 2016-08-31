@@ -12,8 +12,8 @@ binmode( STDOUT, ':encoding(utf-8)' );
 use DateTime;
 use DateTime::Format::Duration;
 use Getopt::Long qw(:config no_ignore_case bundling);
-use List::Util qw(max);
-use Travel::Status::DE::ASEAG;
+use List::Util qw(first max);
+use Travel::Status::DE::URA;
 
 my (@grep_lines);
 my $hide_past       = 1;
@@ -23,19 +23,30 @@ my ( %edata, @edata_pre );
 my $calculate_routes = 0;
 my $developer_mode;
 my $via;
+my ( $list_services, $service );
+my $ura_base    = 'http://ivu.aseag.de/interfaces/ura';
+my $ura_version = 1;
 
 GetOptions(
-	'h|help'      => sub { show_help(0) },
-	'l|line=s@'   => \@grep_lines,
-	'o|output=s@' => \@edata_pre,
-	'p|with-past' => sub { $hide_past = 0 },
-	's|strftime=s' => \$strftime_format,
-	'S|strfrel=s'  => \$strfrel_format,
-	'v|via=s'      => \$via,
-	'V|version'    => \&show_version,
-	'devmode'      => \$developer_mode,
+	'f|strftime=s'  => \$strftime_format,
+	'F|strfrel=s'   => \$strfrel_format,
+	'h|help'        => sub { show_help(0) },
+	'l|line=s@'     => \@grep_lines,
+	'L|list'        => \$list_services,
+	'o|output=s@'   => \@edata_pre,
+	'p|with-past'   => sub { $hide_past = 0 },
+	's|service=s'   => \$service,
+	'v|via=s'       => \$via,
+	'V|version'     => \&show_version,
+	'devmode'       => \$developer_mode,
+	'ura-base=s'    => \$ura_base,
+	'ura-version=s' => \$ura_version,
 
 ) or show_help(1);
+
+if ($list_services) {
+	show_services(0);
+}
 
 if ( @ARGV != 1 ) {
 	show_help(1);
@@ -57,23 +68,51 @@ for my $efield (@edata_pre) {
 	}
 }
 
+if ($service) {
+	my $service_ref = first { lc( $_->{shortname} ) eq lc($service) }
+	Travel::Status::DE::URA::get_services();
+	if ( not $service_ref ) {
+		printf STDERR (
+"Error: Unknown service '%s'. The following services are supported:\n\n",
+			$service
+		);
+		show_services(1);
+	}
+	$ura_base    = $service_ref->{ura_base};
+	$ura_version = $service_ref->{ura_version};
+}
+
 my ($stop_name) = @ARGV;
 
-my $status
-  = Travel::Status::DE::ASEAG->new( developer_mode => $developer_mode );
+my $status = Travel::Status::DE::URA->new(
+	developer_mode => $developer_mode,
+	ura_base       => $ura_base,
+	ura_version    => $ura_version,
+);
 
 sub show_help {
 	my ($code) = @_;
 
-	print 'Usage: aseag-m [-pV] [-o <output>] [-l <lines>] [-v <stopname>] '
+	print "Usage: $0 [-pV] [-o <output>] [-l <lines>] [-v <stopname>] "
 	  . "<stopname>\n"
-	  . "See also: man aseag-m\n";
+	  . "See also: man ura-m\n";
+
+	exit $code;
+}
+
+sub show_services {
+	my ($code) = @_;
+
+	printf( "%-60s %-14s %s\n\n", 'service', 'abbr. (-s)', 'url (-u)' );
+	for my $service ( Travel::Status::DE::URA::get_services() ) {
+		printf( "%-60s %-14s %s\n", @{$service}{qw(name shortname ura_base)} );
+	}
 
 	exit $code;
 }
 
 sub show_version {
-	say "aseag-m version ${VERSION}";
+	say "$0 version ${VERSION}";
 
 	exit 0;
 }
@@ -244,11 +283,11 @@ __END__
 
 =head1 NAME
 
-aseag-m - Unofficial interface to the ASEAG departure monitor
+ure-m - Unofficial interface to URA-based departure monitors
 
 =head1 SYNOPSIS
 
-B<aseag-m> [B<-pV>] [B<-l> I<lines>] [B<-o> I<outputtypes>]
+B<ura-m> [B<-pV>] [B<-l> I<lines>] [B<-o> I<outputtypes>]
 [B<-s> I<timefmt> | B<-S> I<timefmt>]
 [B<-v> I<stopname>] I<stopname>
 
@@ -258,7 +297,7 @@ version 1.02
 
 =head1 DESCRIPTION
 
-B<aseag-m> lists upcoming bus departures at the ASEAG stop I<name>.
+B<ura-m> lists upcoming bus departures at the URA stop I<name>.
 It only shows realtime data and has no knowledge of schedules or delays.
 Departures without such data may not appear at all.
 
@@ -345,7 +384,7 @@ Show version information.
 
 =head1 EXIT STATUS
 
-Normally zero. B<1> means B<aseag-m> was called with invalid options,
+Normally zero. B<1> means B<ura-m> was called with invalid options,
 B<2> indicates a request error from Travel::Status::DE::URA(3pm),
 B<3> a bad (unknown or ambiguous) I<stop> name.
 

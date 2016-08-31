@@ -3,6 +3,7 @@ package Travel::Status::DE::URA;
 use strict;
 use warnings;
 use 5.010;
+use utf8;
 
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
 
@@ -335,6 +336,24 @@ sub results {
 	  map { [ $_, $_->datetime->epoch ] } @results;
 
 	return @results;
+}
+
+# static
+sub get_services {
+	return (
+		{
+			ura_base    => 'http://ivu.aseag.de/interfaces/ura',
+			ura_version => 1,
+			name        => 'Aachener Straßenbahn und Energieversorgungs AG',
+			shortname   => 'ASEAG',
+		},
+		{
+			ura_base    => 'http://countdown.api.tfl.gov.uk/interfaces/ura',
+			ura_version => 1,
+			name        => 'Transport for London',
+			shortname   => 'TfL',
+		}
+	);
 }
 
 1;
