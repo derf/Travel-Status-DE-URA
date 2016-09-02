@@ -305,6 +305,16 @@ Departures without such data may not appear at all.
 
 =over
 
+=item B<-f>, B<--strftime> I<format>
+
+Format absolute times in I<format>, applies both to departure and route
+output.  See DateTime(3pm) for allowed patterns.
+
+=item B<-F>, B<--strfrel> I<format>
+
+Format relative times in I<format>, only applies when used with B<-oT>.
+See DateTime::Format::Duration(3pm) for allowed patterns.
+
 =item B<-l>, B<--line> I<lines>
 
 Limit output to departures of I<lines> (comma-separated list of line
@@ -361,16 +371,6 @@ may be cut off after / before any stop. The same applies to route_full.
 
 Include past departures. Applies both to the departure output and to the
 route output of B<-oa>, B<-ob>, B<-of>.
-
-=item B<-s>, B<--strftime> I<format>
-
-Format absolute times in I<format>, applies both to departure and route
-output.  See DateTime(3pm) for allowed patterns.
-
-=item B<-S>, B<--strfrel> I<format>
-
-Format relative times in I<format>, only applies when used with B<-oT>.
-See DateTime::Format::Duration(3pm) for allowed patterns.
 
 =item B<-v>, B<--via> I<stop>
 
