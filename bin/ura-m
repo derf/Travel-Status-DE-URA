@@ -320,6 +320,11 @@ See DateTime::Format::Duration(3pm) for allowed patterns.
 Limit output to departures of I<lines> (comma-separated list of line
 names, may be used multiple times).
 
+=item B<-L>, B<--list>
+
+List supported URA services wit their URLs (see B<--ura-base>) and
+abbreviations (see B<-s>).
+
 =item B<-o>, B<--output> I<outputtypes>
 
 Format output according to I<outputtypes>. I<outputtypes> is a
@@ -372,6 +377,11 @@ may be cut off after / before any stop. The same applies to route_full.
 Include past departures. Applies both to the departure output and to the
 route output of B<-oa>, B<-ob>, B<-of>.
 
+=item B<-s>, B<--service> I<service>
+
+Request departures for URA instance I<service>, e.g. ASEAG (Aachen, Germany)
+or TfL (London, UK). Use B<-L> to get a list of supported URA instances.
+
 =item B<-v>, B<--via> I<stop>
 
 Only show lines which also serve I<stop> after I<name>.
@@ -379,6 +389,15 @@ Only show lines which also serve I<stop> after I<name>.
 =item B<-V>, B<--version>
 
 Show version information.
+
+=item B<--ura-base> I<url>
+
+Set URA base to I<url>, defaults to C<< http://ivu.aseag.de/interfaces/ura >>.
+See also B<-L> and B<-s>.
+
+=item B<--ura-version> I<version>
+
+Set URA version to I<version>, defaults to C<< 1 >>.
 
 =back
 
