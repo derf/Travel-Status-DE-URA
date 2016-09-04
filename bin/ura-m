@@ -287,8 +287,8 @@ ure-m - Unofficial interface to URA-based departure monitors
 
 =head1 SYNOPSIS
 
-B<ura-m> [B<-pV>] [B<-l> I<lines>] [B<-o> I<outputtypes>]
-[B<-s> I<timefmt> | B<-S> I<timefmt>]
+B<ura-m> [B<-s> I<service>] [B<-pV>] [B<-l> I<lines>] [B<-o> I<outputtypes>]
+[B<-f> I<timefmt> | B<-F> I<timefmt>]
 [B<-v> I<stopname>] I<stopname>
 
 =head1 VERSION
