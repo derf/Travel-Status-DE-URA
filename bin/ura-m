@@ -26,6 +26,7 @@ my $via;
 my ( $list_services, $service );
 my $ura_base    = 'http://ivu.aseag.de/interfaces/ura';
 my $ura_version = 1;
+my $script_name = (split(qr{/}, $0))[-1];
 
 GetOptions(
 	'f|strftime=s'  => \$strftime_format,
@@ -93,7 +94,7 @@ my $status = Travel::Status::DE::URA->new(
 sub show_help {
 	my ($code) = @_;
 
-	print "Usage: $0 [-pV] [-o <output>] [-l <lines>] [-v <stopname>] "
+	print "Usage: $script_name [-pV] [-o <output>] [-l <lines>] [-v <stopname>] "
 	  . "<stopname>\n"
 	  . "See also: man ura-m\n";
 
@@ -112,7 +113,7 @@ sub show_services {
 }
 
 sub show_version {
-	say "$0 version ${VERSION}";
+	say "$script_name version ${VERSION}";
 
 	exit 0;
 }
