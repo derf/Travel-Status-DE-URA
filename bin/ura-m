@@ -32,13 +32,13 @@ GetOptions(
 	'F|strfrel=s'   => \$strfrel_format,
 	'h|help'        => sub { show_help(0) },
 	'l|line=s@'     => \@grep_lines,
-	'L|list'        => \$list_services,
 	'o|output=s@'   => \@edata_pre,
 	'p|with-past'   => sub { $hide_past = 0 },
 	's|service=s'   => \$service,
 	'v|via=s'       => \$via,
 	'V|version'     => \&show_version,
 	'devmode'       => \$developer_mode,
+	'list'          => \$list_services,
 	'ura-base=s'    => \$ura_base,
 	'ura-version=s' => \$ura_version,
 
@@ -320,9 +320,9 @@ See DateTime::Format::Duration(3pm) for allowed patterns.
 Limit output to departures of I<lines> (comma-separated list of line
 names, may be used multiple times).
 
-=item B<-L>, B<--list>
+=item B<--list>
 
-List supported URA services wit their URLs (see B<--ura-base>) and
+List supported URA services with their URLs (see B<--ura-base>) and
 abbreviations (see B<-s>).
 
 =item B<-o>, B<--output> I<outputtypes>
@@ -380,7 +380,7 @@ route output of B<-oa>, B<-ob>, B<-of>.
 =item B<-s>, B<--service> I<service>
 
 Request departures for URA instance I<service>, e.g. ASEAG (Aachen, Germany)
-or TfL (London, UK). Use B<-L> to get a list of supported URA instances.
+or TfL (London, UK). Use B<--list> to get a list of supported URA instances.
 
 =item B<-v>, B<--via> I<stop>
 
@@ -393,11 +393,11 @@ Show version information.
 =item B<--ura-base> I<url>
 
 Set URA base to I<url>, defaults to C<< http://ivu.aseag.de/interfaces/ura >>.
-See also B<-L> and B<-s>.
+See also B<--list> and B<-s>.
 
 =item B<--ura-version> I<version>
 
-Set URA version to I<version>, defaults to C<< 1 >>.
+Set URA API version to I<version>, defaults to C<< 1 >>.
 
 =back
 
