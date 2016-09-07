@@ -26,7 +26,7 @@ my $via;
 my ( $list_services, $service );
 my $ura_base    = 'http://ivu.aseag.de/interfaces/ura';
 my $ura_version = 1;
-my $script_name = (split(qr{/}, $0))[-1];
+my $script_name = ( split( qr{/}, $0 ) )[-1];
 
 GetOptions(
 	'f|strftime=s'  => \$strftime_format,
@@ -51,6 +51,10 @@ if ($list_services) {
 
 if ( @ARGV != 1 ) {
 	show_help(1);
+}
+
+if ( not $service and $script_name ne 'ura-m' ) {
+	($service) = ( $script_name =~ m{ ^ ( [^-]+ ) -m $ }x );
 }
 
 # --line=foo,bar support
@@ -94,7 +98,8 @@ my $status = Travel::Status::DE::URA->new(
 sub show_help {
 	my ($code) = @_;
 
-	print "Usage: $script_name [-pV] [-o <output>] [-l <lines>] [-v <stopname>] "
+	print
+	  "Usage: $script_name [-pV] [-o <output>] [-l <lines>] [-v <stopname>] "
 	  . "<stopname>\n"
 	  . "See also: man ura-m\n";
 
@@ -302,6 +307,22 @@ B<ura-m> lists upcoming bus departures at the URA stop I<name>.
 It only shows realtime data and has no knowledge of schedules or delays.
 Departures without such data may not appear at all.
 
+=head1 OPERATOR SELECTION
+
+By default, B<ura-m> looks up departures for stops operated by ASEAG (Aachener
+StraE<szlig>enbahn und Energieversorgungs AG), so it only works for Aachen and
+its vicinity. Other operators (and, thus, other areas) can be selected using
+either the B<-s>/B<--service> option, the B<--ura-base> option, or the program
+name.
+
+By creating a I<service>-m symlink to B<ura-m>, it will default to the URA
+interface operated by I<service>, as if B<-s> I<service> was specified. So,
+for example, linking tfl-m to ura-m will request departures for TfL-operated
+stops, and linking aseag-m to ura-m will request departures for ASEAG-operated
+stops.
+
+Use the B<--list> option to get a list of supported backend services.
+
 =head1 OPTIONS
 
 =over
@@ -382,6 +403,7 @@ route output of B<-oa>, B<-ob>, B<-of>.
 
 Request departures for URA instance I<service>, e.g. ASEAG (Aachen, Germany)
 or TfL (London, UK). Use B<--list> to get a list of supported URA instances.
+Note that I<service> is not case sensitive.
 
 =item B<-v>, B<--via> I<stop>
 
