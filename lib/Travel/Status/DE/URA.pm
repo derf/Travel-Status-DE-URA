@@ -7,7 +7,7 @@ use utf8;
 
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
 
-our $VERSION = '1.02';
+our $VERSION = '2.00';
 
 # create CONSTANTS for different Return Types
 use constant {
@@ -384,7 +384,7 @@ API" data providers (e.g. ASEAG)
 
 =head1 VERSION
 
-version 1.02
+version 2.00
 
 =head1 DESCRIPTION
 

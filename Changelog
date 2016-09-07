@@ -1,3 +1,19 @@
+Travel::Status::DE::URA 2.00 - Wed Sep 07 2016
+
+    * Add support for bus departures in London supplied by the TfL URA
+      service
+    * New module: Travel::Status::GB::TfL
+    * Rename aseag-m to ura-m
+    * Rename short option -s (corresponding to --strftime) to -f
+    * Rename short option -S (corresponding to --strfrel) to -F
+    * New options:
+      -s / --service selects a backend service (defaults to ASEAG),
+      --list lists supported backend services,
+      --ura-base sets a backend service by URL, and
+      --ura-version sets the backend service version
+    * Travel::Status::DE::URA::Result: Add ->platform accessor (shortcut for
+      ->stop_indicator)
+
 Travel::Status::DE::URA 1.02 - Sat Apr 16 2016
 
     * Result: Add stop_indicator accessor

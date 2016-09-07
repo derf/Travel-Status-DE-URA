@@ -6,7 +6,7 @@ use 5.010;
 
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
 
-our $VERSION = '1.02';
+our $VERSION = '2.00';
 
 use parent 'Travel::Status::DE::URA';
 
@@ -44,7 +44,7 @@ Travel::Status::GB::TFL - unofficial TFL departure monitor.
 
 =head1 VERSION
 
-version 1.02
+version 2.00
 
 =head1 DESCRIPTION
 
