@@ -1,4 +1,4 @@
-package Travel::Status::DE::TFL;
+package Travel::Status::GB::TFL;
 
 use strict;
 use warnings;
@@ -25,13 +25,13 @@ __END__
 
 =head1 NAME
 
-Travel::Status::DE::TFL - unofficial TFL departure monitor.
+Travel::Status::GB::TFL - unofficial TFL departure monitor.
 
 =head1 SYNOPSIS
 
-    use Travel::Status::DE::TFL;
+    use Travel::Status::GB::TFL;
 
-    my $status = Travel::Status::DE::TFL->new(
+    my $status = Travel::Status::GB::TFL->new(
         stop => 'Aachen Bushof'
     );
 
@@ -48,17 +48,17 @@ version 1.02
 
 =head1 DESCRIPTION
 
-Travel::Status::DE::TFL is an unofficial interface to the TFL realtime
-departure monitor.
+Travel::Status::GB::TFL is an unofficial interface to the Transport for London
+(TfL) realtime departure monitor.
 
 =head1 METHODS
 
 =over
 
-=item my $status = Travel::Status::DE::TFL->new(I<%opt>)
+=item my $status = Travel::Status::GB::TFL->new(I<%opt>)
 
 Requests the departures as specified by I<opts> and returns a new
-Travel::Status::DE::TFL object.
+Travel::Status::GB::TFL object.
 
 Calls Travel::Status::DE::URA->new with the appropriate B<ura_base> and
 B<ura_version> parameters. All I<opts> are passed on.
