@@ -2,7 +2,7 @@ Travel::Status::DE::URA 2.00 - Wed Sep 07 2016
 
     * Add support for bus departures in London supplied by the TfL URA
       service
-    * New module: Travel::Status::GB::TfL
+    * New module: Travel::Status::GB::TFL
     * Rename aseag-m to ura-m
     * Rename short option -s (corresponding to --strftime) to -f
     * Rename short option -S (corresponding to --strfrel) to -F
