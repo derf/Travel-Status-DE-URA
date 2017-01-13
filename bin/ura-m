@@ -109,7 +109,7 @@ sub show_help {
 sub show_services {
 	my ($code) = @_;
 
-	printf( "%-60s %-14s %s\n\n", 'service', 'abbr. (-s)', 'url (-u)' );
+	printf( "%-60s %-14s %s\n\n", 'service', 'abbr. (-s)', 'url (--ura-base)' );
 	for my $service ( Travel::Status::DE::URA::get_services() ) {
 		printf( "%-60s %-14s %s\n", @{$service}{qw(name shortname ura_base)} );
 	}
