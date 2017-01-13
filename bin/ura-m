@@ -93,6 +93,7 @@ my $status = Travel::Status::DE::URA->new(
 	developer_mode => $developer_mode,
 	ura_base       => $ura_base,
 	ura_version    => $ura_version,
+	with_messages  => 1,
 );
 
 sub show_help {
@@ -210,6 +211,10 @@ sub show_results {
 	my $dt_now = DateTime->now( time_zone => 'Europe/Berlin' );
 	my $dt_format
 	  = DateTime::Format::Duration->new( pattern => $strfrel_format );
+
+	for my $m ( $status->messages_by_stop_name($stop_name) ) {
+		printf( "# %s\n", $m );
+	}
 
 	for my $d (
 		$status->results(

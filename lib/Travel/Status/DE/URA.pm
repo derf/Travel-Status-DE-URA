@@ -63,6 +63,9 @@ sub new {
 		},
 	};
 
+	if ( $opt{with_messages} ) {
+		$self->{post}{ReturnList} .= ',messagetext,messagetype';
+	}
 	if ( $opt{with_stops} ) {
 		$self->{post}{StopAlso} = 'True';
 	}
@@ -158,7 +161,20 @@ sub parse_raw_data {
 				);
 			}
 		}
-		if ( $type == TYPE_PREDICTION ) {
+		elsif ( $type == TYPE_MESSAGE ) {
+			push(
+				@{ $self->{messages} },
+				{
+					stop_name => $fields[1],
+					stop_id   => $fields[2],
+
+					# 0 = long text. 2 = short text for station displays?
+					type => $fields[6],
+					text => $fields[7],
+				}
+			);
+		}
+		elsif ( $type == TYPE_PREDICTION ) {
 			push( @{ $self->{stop_names} }, $fields[1] );
 		}
 	}
@@ -191,6 +207,25 @@ sub errstr {
 	my ($self) = @_;
 
 	return $self->{errstr};
+}
+
+sub messages_by_stop_id {
+	my ( $self, $stop_id ) = @_;
+
+	my @messages = grep { $_->{stop_id} == $stop_id } @{ $self->{messages} };
+	@messages = map { $_->{text} } @messages;
+
+	return @messages;
+}
+
+sub messages_by_stop_name {
+	my ( $self, $stop_name ) = @_;
+
+	my @messages
+	  = grep { $_->{stop_name} eq $stop_name } @{ $self->{messages} };
+	@messages = map { $_->{text} } @messages;
+
+	return @messages;
 }
 
 sub results {
