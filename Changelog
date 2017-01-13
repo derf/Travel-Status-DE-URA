@@ -1,3 +1,8 @@
+Travel::Status::DE::URA UNRELEASED
+
+    * Add support for departures in Mainz supplied by the local URA service
+    * New module: Travel::Status::DE::MvgMainz
+
 Travel::Status::DE::URA 2.00 - Wed Sep 07 2016
 
     * Add support for bus departures in London supplied by the TfL URA
