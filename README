@@ -35,4 +35,4 @@ $ sudo ./Build install
 See also the Module::Build documentation.
 
 You can then run 'man Travel::Status::DE::URA'.
-This distribution also ships the script 'aseag-m', see 'man aseag-m'.
+This distribution also ships the script 'ura-m', see 'man ura-m'.
