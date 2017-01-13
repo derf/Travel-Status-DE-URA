@@ -348,6 +348,12 @@ sub get_services {
 			shortname   => 'ASEAG',
 		},
 		{
+			ura_base    => 'http://ura.itcs.mvg-mainz.de/interfaces/ura',
+			ura_version => 1,
+			name        => 'MVG Mainz',
+			shortname   => 'MvgMainz',
+		},
+		{
 			ura_base    => 'http://countdown.api.tfl.gov.uk/interfaces/ura',
 			ura_version => 1,
 			name        => 'Transport for London',
