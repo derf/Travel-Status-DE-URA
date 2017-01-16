@@ -476,6 +476,13 @@ Only request departures for stops which are located up to I<dist> meters
 away from the location specified by I<lon> and I<lat>. Example parameter:
 "50.78496,6.10897,100".
 
+=item B<with_messages> => B<0>|B<1>
+
+When set to B<1> (or any other true value): Also requests stop messages from
+the URA service. Thene can include texts such as "Expect delays due to snow and
+ice" or "stop closed, use replacement stop X instead". Use
+C<< $status->messages >> to access them.
+
 =item B<with_stops> => B<0>|B<1>
 
 When set to B<1> (or any other true value): Also request all stops satisfying
@@ -509,6 +516,16 @@ Travel::Status::DE::URA::Stop(3pm) object describing it.
 
 Only works when $status was created with B<with_stops> set to a true value.
 Otherwise, undef is returned.
+
+=item $status->messages_by_stop_id($stop_id)
+
+Returns a list of messages for the stop with the ID I<$stop_id>.
+At the moment, each message is a simple string. This may change in the future.
+
+=item $status->messages_by_stop_name($stop_id)
+
+Returns a list of messages for the stop with the name I<$stop_name>.
+At the moment, each message is a simple string. This may change in the future.
 
 =item $status->results(I<%opt>)
 

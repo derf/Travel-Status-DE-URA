@@ -308,9 +308,9 @@ version 2.00
 
 =head1 DESCRIPTION
 
-B<ura-m> lists upcoming bus departures at the URA stop I<name>.
-It only shows realtime data and has no knowledge of schedules or delays.
-Departures without such data may not appear at all.
+B<ura-m> lists upcoming bus departures and bus service messages at the stop
+I<name>.  It only shows realtime data and has no knowledge of schedules or
+delays.  Departures without such data may not appear at all.
 
 =head1 OPERATOR SELECTION
 
