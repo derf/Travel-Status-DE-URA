@@ -1,7 +1,12 @@
-Travel::Status::DE::URA UNRELEASED
+Travel::Status::DE::URA 2.01 - Tue Jan 17 2017
 
     * Add support for departures in Mainz supplied by the local URA service
+     (MvgMainz)
+    * ura-m: Show stop-specific messages (if present)
     * New module: Travel::Status::DE::MvgMainz
+    * Travel::Status::DE::URA->new: add option with_messages
+    * Travel::Status::DE::URA: add ->messages_by_stop_id and
+      ->messages_by_stop_name
 
 Travel::Status::DE::URA 2.00 - Wed Sep 07 2016
 
