@@ -29,5 +29,10 @@ Module::Build->new(
 		'Text::CSV' => 0,
 	},
 	sign => 1,
+	meta_merge => {
+		resources => {
+			repository => 'https://github.com/derf/Travel-Status-DE-URA'
+		}
+	},
 
 )->create_build_script();
