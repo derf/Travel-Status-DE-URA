@@ -385,8 +385,8 @@ sub get_services {
 		{
 			ura_base    => 'http://ura.itcs.mvg-mainz.de/interfaces/ura',
 			ura_version => 1,
-			name        => 'MVG Mainz',
-			shortname   => 'MvgMainz',
+			name        => 'Mainzer Mobilität',
+			shortname   => 'MM',
 		},
 		{
 			ura_base    => 'http://countdown.api.tfl.gov.uk/interfaces/ura',
