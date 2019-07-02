@@ -25,7 +25,7 @@ __END__
 
 =head1 NAME
 
-Travel::Status::DE::MM - unofficial Mainzer Mobilität departure monitor.
+Travel::Status::DE::MM - unofficial Mainzer MobilitE<auml>t departure monitor.
 
 =head1 SYNOPSIS
 
@@ -49,7 +49,7 @@ version 2.01
 =head1 DESCRIPTION
 
 Travel::Status::DE::MM is an unofficial interface to the Mainzer
-Mobilität realtime departure monitor.
+MobilitE<auml>t realtime departure monitor.
 
 =head1 METHODS
 
