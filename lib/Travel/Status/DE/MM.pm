@@ -1,4 +1,4 @@
-package Travel::Status::DE::MvgMainz;
+package Travel::Status::DE::MM;
 
 use strict;
 use warnings;
@@ -25,13 +25,13 @@ __END__
 
 =head1 NAME
 
-Travel::Status::DE::MvgMainz - unofficial MVG departure monitor.
+Travel::Status::DE::MM - unofficial Mainzer MobilitE<auml>t departure monitor.
 
 =head1 SYNOPSIS
 
-    use Travel::Status::DE::MvgMainz;
+    use Travel::Status::DE::MM;
 
-    my $status = Travel::Status::DE::MvgMainz->new(
+    my $status = Travel::Status::DE::MM->new(
         stop => 'Hauptbahnhof West'
     );
 
@@ -48,17 +48,17 @@ version 2.01
 
 =head1 DESCRIPTION
 
-Travel::Status::DE::MvgMainz is an unofficial interface to the MVG Mainz realtime
-departure monitor.
+Travel::Status::DE::MM is an unofficial interface to the Mainzer
+MobilitE<auml>t realtime departure monitor.
 
 =head1 METHODS
 
 =over
 
-=item my $status = Travel::Status::DE::MvgMainz->new(I<%opt>)
+=item my $status = Travel::Status::DE::MM->new(I<%opt>)
 
 Requests the departures as specified by I<opts> and returns a new
-Travel::Status::DE::MvgMainz object.
+Travel::Status::DE::MM object.
 
 Calls Travel::Status::DE::URA->new with the appropriate B<ura_base> and
 B<ura_version> parameters. All I<opts> are passed on.
@@ -85,11 +85,11 @@ Many.
 
 =head1 SEE ALSO
 
-MvgMainz-m(1), Travel::Status::DE::URA(3pm).
+MM-m(1), Travel::Status::DE::URA(3pm).
 
 =head1 AUTHOR
 
-Copyright (C) 2016 by Moritz Schlarb E<lt>moschlar@metalabs.deE<gt>
+Copyright (C) 2016, 2019 by Moritz Schlarb E<lt>moschlar@metalabs.deE<gt>
 
 =head1 LICENSE
 
