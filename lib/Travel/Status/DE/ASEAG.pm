@@ -85,7 +85,7 @@ Many.
 
 =head1 SEE ALSO
 
-aseag-m(1), Travel::Status::DE::URA(3pm).
+ura-m(1), Travel::Status::DE::URA(3pm).
 
 =head1 AUTHOR
 
