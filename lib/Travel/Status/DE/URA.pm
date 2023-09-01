@@ -5,8 +5,6 @@ use warnings;
 use 5.010;
 use utf8;
 
-no if $] >= 5.018, warnings => 'experimental::smartmatch';
-
 our $VERSION = '2.01';
 
 # create CONSTANTS for different Return Types

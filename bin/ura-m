@@ -3,8 +3,6 @@ use strict;
 use warnings;
 use 5.010;
 
-no if $] >= 5.018, warnings => 'experimental::smartmatch';
-
 our $VERSION = '2.01';
 
 binmode( STDOUT, ':encoding(utf-8)' );
@@ -12,7 +10,7 @@ binmode( STDOUT, ':encoding(utf-8)' );
 use DateTime;
 use DateTime::Format::Duration;
 use Getopt::Long qw(:config no_ignore_case bundling);
-use List::Util qw(first max);
+use List::Util   qw(any first max);
 use Travel::Status::DE::URA;
 
 my (@grep_lines);
@@ -62,20 +60,21 @@ if ( not $service and $script_name ne 'ura-m' ) {
 @grep_lines = split( qr{,}, join( q{,}, @grep_lines ) );
 
 for my $efield (@edata_pre) {
-	given ($efield) {
-		when ('a') { $edata{route_after}       = 1; $calculate_routes = 1 }
-		when ('b') { $edata{route_before}      = 1; $calculate_routes = 1 }
-		when ('f') { $edata{route_full}        = 1; $calculate_routes = 1 }
-		when ('i') { $edata{indicator}         = 1 }
-		when ('r') { $edata{route_interesting} = 1; $calculate_routes = 1 }
-		when ('T') { $edata{relative_times}    = 1 }
-		default    { $edata{$efield}           = 1 }
+	if    ( $efield eq 'a' ) { $edata{route_after}  = 1; $calculate_routes = 1 }
+	elsif ( $efield eq 'b' ) { $edata{route_before} = 1; $calculate_routes = 1 }
+	elsif ( $efield eq 'f' ) { $edata{route_full}   = 1; $calculate_routes = 1 }
+	elsif ( $efield eq 'i' ) { $edata{indicator}    = 1 }
+	elsif ( $efield eq 'r' ) {
+		$edata{route_interesting} = 1;
+		$calculate_routes = 1;
 	}
+	elsif ( $efield eq 'T' ) { $edata{relative_times} = 1 }
+	else                     { $edata{$efield}        = 1 }
 }
 
 if ($service) {
 	my $service_ref = first { lc( $_->{shortname} ) eq lc($service) }
-	Travel::Status::DE::URA::get_services();
+	  Travel::Status::DE::URA::get_services();
 	if ( not $service_ref ) {
 		printf STDERR (
 "Error: Unknown service '%s'. The following services are supported:\n\n",
@@ -226,7 +225,7 @@ sub show_results {
 	  )
 	{
 
-		if ( ( @grep_lines and not( $d->line ~~ \@grep_lines ) ) ) {
+		if ( ( @grep_lines and not( any { $d->line eq $_ } @grep_lines ) ) ) {
 			next;
 		}
 		my ( @line, @route );
@@ -461,7 +460,7 @@ Unknown.
 
 =head1 AUTHOR
 
-Copyright (C) 2013-2016 by Birte Kristina Friesel E<lt>derf@finalrewind.orgE<gt>
+Copyright (C) 2013-2023 by Birte Kristina Friesel E<lt>derf@finalrewind.orgE<gt>
 
 =head1 LICENSE
 
