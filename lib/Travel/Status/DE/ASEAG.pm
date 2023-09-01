@@ -89,7 +89,7 @@ ura-m(1), Travel::Status::DE::URA(3pm).
 
 =head1 AUTHOR
 
-Copyright (C) 2013-2016 by Daniel Friesel E<lt>derf@finalrewind.orgE<gt>
+Copyright (C) 2013-2016 by Birte Kristina Friesel E<lt>derf@finalrewind.orgE<gt>
 
 =head1 LICENSE
 
