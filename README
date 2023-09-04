@@ -1,7 +1,10 @@
 Travel::Status::DE::URA - interface to URA-based departure monitors
 -----------------------------------------------
 
-* <http://finalrewind.org/projects/Travel-Status-DE-URA/>
+This project is **deprecated**, as it looks like there are no URA instances in the wild anymore.
+It may not receive updates or security fixes.
+
+<https://finalrewind.org/projects/Travel-Status-DE-URA/>
 
 
 Dependencies
